@@ -67,7 +67,7 @@ $galleries = $stmt->fetchAll(PDO::FETCH_ASSOC);
                       <img src="uploads/gallery/<?= htmlspecialchars($gallery['thumbnail'], ENT_QUOTES, 'UTF-8') ?>" 
                            class="card-img-top" 
                            alt="<?= htmlspecialchars($gallery['name'], ENT_QUOTES, 'UTF-8') ?>"
-                           style="height: 250px; object-fit: cover;">
+                           style="width: 100%; height: 250px; object-fit: cover; object-position: center;">
                     </a>
                   <?php else: ?>
                     <div class="card-img-top bg-secondary d-flex align-items-center justify-content-center" 

@@ -5,6 +5,100 @@ define('IN_APP', true);
 require __DIR__ . '/config.php';
 require_admin();
 
+/**
+ * Resize slike uz održavanje omjera
+ * @param string $source Putanja do originalne slike
+ * @param string $destination Putanja gdje spremiti resizanu sliku
+ * @param int $maxWidth Maksimalna širina
+ * @param int $maxHeight Maksimalna visina
+ * @param int $quality Kvaliteta (1-100)
+ * @return bool Success
+ */
+function resizeImage($source, $destination, $maxWidth = 1920, $maxHeight = 1080, $quality = 85) {
+    $imageInfo = @getimagesize($source);
+    if (!$imageInfo) {
+        return false;
+    }
+
+    list($origWidth, $origHeight, $imageType) = $imageInfo;
+
+    // Učitaj originalnu sliku ovisno o tipu
+    switch ($imageType) {
+        case IMAGETYPE_JPEG:
+            $image = @imagecreatefromjpeg($source);
+            break;
+        case IMAGETYPE_PNG:
+            $image = @imagecreatefrompng($source);
+            break;
+        case IMAGETYPE_GIF:
+            $image = @imagecreatefromgif($source);
+            break;
+        case IMAGETYPE_WEBP:
+            $image = @imagecreatefromwebp($source);
+            break;
+        default:
+            return false;
+    }
+
+    if (!$image) {
+        return false;
+    }
+
+    // Izračunaj nove dimenzije uz održavanje omjera
+    $ratio = min($maxWidth / $origWidth, $maxHeight / $origHeight);
+    
+    // Ako je slika manja od max dimenzija, ne mijenjaj je
+    if ($ratio >= 1) {
+        $newWidth = $origWidth;
+        $newHeight = $origHeight;
+    } else {
+        $newWidth = (int)($origWidth * $ratio);
+        $newHeight = (int)($origHeight * $ratio);
+    }
+
+    // Kreiraj novu sliku
+    $newImage = imagecreatetruecolor($newWidth, $newHeight);
+
+    // Očuvaj transparentnost za PNG i GIF
+    if ($imageType == IMAGETYPE_PNG || $imageType == IMAGETYPE_GIF) {
+        imagealphablending($newImage, false);
+        imagesavealpha($newImage, true);
+        $transparent = imagecolorallocatealpha($newImage, 255, 255, 255, 127);
+        imagefilledrectangle($newImage, 0, 0, $newWidth, $newHeight, $transparent);
+    }
+
+    // Kopiraj i resiziraj
+    imagecopyresampled($newImage, $image, 0, 0, 0, 0, $newWidth, $newHeight, $origWidth, $origHeight);
+
+    // Spremi sliku
+    $result = false;
+    $ext = strtolower(pathinfo($destination, PATHINFO_EXTENSION));
+    
+    switch ($ext) {
+        case 'jpg':
+        case 'jpeg':
+            $result = imagejpeg($newImage, $destination, $quality);
+            break;
+        case 'png':
+            // PNG quality je 0-9 (0 = bez kompresije, 9 = max kompresija)
+            $pngQuality = (int)(9 - ($quality / 100) * 9);
+            $result = imagepng($newImage, $destination, $pngQuality);
+            break;
+        case 'gif':
+            $result = imagegif($newImage, $destination);
+            break;
+        case 'webp':
+            $result = imagewebp($newImage, $destination, $quality);
+            break;
+    }
+
+    // Oslobodi memoriju
+    imagedestroy($image);
+    imagedestroy($newImage);
+
+    return $result;
+}
+
 // DEBUG - privremeno uključeno dok ne proradi upload
 error_reporting(E_ALL);
 ini_set('display_errors', '1');
@@ -145,9 +239,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_gallery'])) {
 
                 $newName = uniqid('img_', true) . '.' . $ext;
                 $fullPath = $uploadDir . $newName;
-                $moveOk = move_uploaded_file($tmpName, $fullPath);
+                
+                // Resize sliku prije spremanja
+                $resized = resizeImage($tmpName, $fullPath, 1920, 1080, 85);
 
-                if ($moveOk) {
+                if ($resized) {
                     $stmt = $pdo->prepare("
                         INSERT INTO gallery_images (gallery_id, filename, created_at)
                         VALUES (:gallery_id, :filename, NOW())
@@ -159,7 +255,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_gallery'])) {
 
                     $uploadedCount++;
                 } else {
-                    $fileErrors[] = $origName . ' - move_uploaded_file nije uspio.';
+                    $fileErrors[] = $origName . ' - resize/spremanje nije uspjelo.';
                 }
             }
         }
@@ -322,7 +418,7 @@ if (isset($_GET['delete_image'])) {
                         ?>
                         <div class="col-6 col-md-3">
                             <div class="border rounded-3 p-2 bg-black">
-                                <img src="<?= htmlspecialchars($src, ENT_QUOTES, 'UTF-8') ?>" class="img-fluid rounded mb-2" alt="">
+                                <img src="<?= htmlspecialchars($src, ENT_QUOTES, 'UTF-8') ?>" class="img-fluid rounded mb-2" alt="" style="width: 100%; height: 200px; object-fit: cover; object-position: center;">
                                 <div class="small text-truncate text-secondary">
                                     <?= htmlspecialchars($img['filename'], ENT_QUOTES, 'UTF-8') ?>
                                 </div>

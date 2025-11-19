@@ -122,7 +122,7 @@ if ($slug === '') {
                         src="<?= htmlspecialchars($src, ENT_QUOTES, 'UTF-8') ?>"
                         alt="<?= htmlspecialchars($alt, ENT_QUOTES, 'UTF-8') ?>"
                         class="img-fluid rounded"
-                        style="width: 100%; height: 200px; object-fit: cover; transition: transform 0.2s;"
+                        style="width: 100%; height: 200px; object-fit: cover; object-position: center; transition: transform 0.2s;"
                         onmouseover="this.style.transform='scale(1.05)'"
                         onmouseout="this.style.transform='scale(1)'"
                       >
