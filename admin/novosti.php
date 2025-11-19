@@ -1,6 +1,6 @@
 <?php
 define('IN_APP', true);
-require __DIR__ . '/config.php';
+require __DIR__ . '/../includes/config.php';
 
 // Samo za prijavljene admine
 require_admin();
@@ -189,14 +189,14 @@ $allArticles = $stmtList->fetchAll();
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;800&display=swap" rel="stylesheet">
 
   <!-- Custom stilovi (isti kao front) -->
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="../assets/css/style.css">
 </head>
 
 <body>
 
   <!-- NAVBAR u MG stilu, ali “admin” verzija -->
   <header id="top">
-    <?php include __DIR__ . '/nav.php'; ?>
+    <?php include __DIR__ . '/../includes/nav.php'; ?>
   </header>
 
   <main class="py-5">
@@ -206,7 +206,7 @@ $allArticles = $stmtList->fetchAll();
           <div class="mg-section-eyebrow">Admin alat</div>
           <h1 class="mg-section-title">Unos članka</h1>
         </div>
-        <a href="admin-galerije.php" class="btn btn-outline-light btn-sm">Galerije</a>
+        <a href="galerije.php" class="btn btn-outline-light btn-sm">Galerije</a>
       </div>
 
       <div class="d-flex justify-content-between align-items-center mb-4">
@@ -217,10 +217,10 @@ $allArticles = $stmtList->fetchAll();
           </h1>
         </div>
         <div class="d-flex gap-2">
-          <a href="admin-novosti.php" class="btn btn-outline-light btn-sm">
+          <a href="novosti.php" class="btn btn-outline-light btn-sm">
             + Novi članak
           </a>
-          <a href="admin-logout.php" class="btn btn-outline-secondary btn-sm">
+          <a href="logout.php" class="btn btn-outline-secondary btn-sm">
             Odjava
           </a>
         </div>
@@ -276,10 +276,10 @@ $allArticles = $stmtList->fetchAll();
                     <td><?= date('d.m.Y.', strtotime($row['created_at'])) ?></td>
                     <td class="small"><?= htmlspecialchars($row['slug'], ENT_QUOTES, 'UTF-8') ?></td>
                     <td class="d-flex gap-1">
-                      <a href="admin-novosti.php?id=<?= (int) $row['id'] ?>" class="btn btn-sm btn-outline-light">
+                      <a href="novosti.php?id=<?= (int) $row['id'] ?>" class="btn btn-sm btn-outline-light">
                         Uredi
                       </a>
-                      <a href="clanak.php?slug=<?= urlencode($row['slug']) ?>" target="_blank"
+                      <a href="../clanak.php?slug=<?= urlencode($row['slug']) ?>" target="_blank"
                         class="btn btn-sm btn-outline-secondary">
                         Pogledaj
                       </a>

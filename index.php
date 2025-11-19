@@ -1,6 +1,6 @@
 <?php
 define('IN_APP', true);
-require __DIR__ . '/config.php';
+require __DIR__ . '/includes/config.php';
 
 // Zadnja 3 članka za mini-listu na početnoj
 $stmtMini = $pdo->query("
@@ -28,7 +28,7 @@ $latestArticles = $stmtMini->fetchAll();
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;800&display=swap" rel="stylesheet">
 
   <!-- Custom stilovi -->
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="assets/css/style.css">
 
   <!-- Custom JS -->
    <script src="assets/js/news-home.js"></script>
@@ -38,7 +38,7 @@ $latestArticles = $stmtMini->fetchAll();
 
   <!-- NAVBAR -->
   <header id="top">
-    <?php include __DIR__ . '/nav.php'; ?>  
+    <?php include __DIR__ . '/includes/nav.php'; ?>  
   </header>
 
   <main>

@@ -1,6 +1,6 @@
 <?php
 define('IN_APP', true);
-require __DIR__ . '/config.php';
+require __DIR__ . '/includes/config.php';
 
 // Dohvati sve galerije s prvom slikom za thumbnail
 $stmt = $pdo->query("
@@ -33,14 +33,14 @@ $galleries = $stmt->fetchAll(PDO::FETCH_ASSOC);
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;800&display=swap" rel="stylesheet">
 
   <!-- Custom stilovi -->
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="assets/css/style.css">
 </head>
 
 <body>
 
   <!-- NAVBAR -->
   <header id="top">
-    <?php include __DIR__ . '/nav.php'; ?>
+    <?php include __DIR__ . '/includes/nav.php'; ?>
   </header>
 
   <main>

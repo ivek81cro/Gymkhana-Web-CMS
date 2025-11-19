@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 define('IN_APP', true);
-require __DIR__ . '/config.php';
+require __DIR__ . '/../includes/config.php';
 require_admin();
 
 $errors = [];
@@ -45,9 +45,9 @@ $galleries = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <div class="mb-4 d-flex justify-content-between align-items-center">
             <h1 class="h3 mb-0">Galerije</h1>
             <div class="d-flex gap-2">
-                <a href="admin-novosti.php" class="btn btn-outline-light btn-sm">← Članci</a>
-                <a href="admin-galerija-uredi.php" class="btn btn-primary btn-sm">+ Nova galerija</a>
-                <a href="admin-logout.php" class="btn btn-outline-secondary btn-sm">Odjava</a>
+                <a href="novosti.php" class="btn btn-outline-light btn-sm">← Članci</a>
+                <a href="galerija-uredi.php" class="btn btn-primary btn-sm">+ Nova galerija</a>
+                <a href="logout.php" class="btn btn-outline-secondary btn-sm">Odjava</a>
             </div>
         </div>
 
@@ -84,7 +84,7 @@ $galleries = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                 </td>
                                 <td>
                                     <div class="btn-group btn-group-sm" role="group">
-                                        <a href="admin-galerija-uredi.php?id=<?= (int)$g['id'] ?>" class="btn btn-outline-light">
+                                        <a href="galerija-uredi.php?id=<?= (int)$g['id'] ?>" class="btn btn-outline-light">
                                             Uredi
                                         </a>
                                         <a href="?delete=<?= (int)$g['id'] ?>"

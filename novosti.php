@@ -1,6 +1,6 @@
 <?php
 define('IN_APP', true);
-require __DIR__ . '/config.php';
+require __DIR__ . '/includes/config.php';
 
 $stmt = $pdo->query("
     SELECT id, slug, title, excerpt, image, category, created_at
@@ -27,14 +27,14 @@ $articles = $stmt->fetchAll();
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;800&display=swap" rel="stylesheet">
 
   <!-- Custom stilovi (isti kao na index.php) -->
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="assets/css/style.css">
 </head>
 
 <body>
 
   <!-- NAVBAR (isti kao u index.php) -->
   <header id="top">
-    <?php include __DIR__ . '/nav.php'; ?>
+    <?php include __DIR__ . '/includes/nav.php'; ?>
   </header>
 
   <main>
@@ -52,11 +52,11 @@ $articles = $stmt->fetchAll();
             </p>
         
             <?php if (is_admin()): ?>
-              <a href="admin-novosti.php" class="btn mg-btn">
+              <a href="admin/novosti.php" class="btn mg-btn">
                 Admin zona
               </a>
             <?php else: ?>
-              <a href="admin-login.php" class="btn mg-btn-outline">
+              <a href="admin/login.php" class="btn mg-btn-outline">
                 Admin prijava
               </a>
             <?php endif; ?>

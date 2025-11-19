@@ -2,7 +2,7 @@
 // Admin - kreiranje i uređivanje galerije + upload slika
 
 define('IN_APP', true);
-require __DIR__ . '/config.php';
+require __DIR__ . '/../includes/config.php';
 require_admin();
 
 /**
@@ -226,7 +226,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_gallery'])) {
         $fileErrors = [];
 
         // Putanja do upload foldera
-        $uploadDir = __DIR__ . '/uploads/gallery/';
+        $uploadDir = __DIR__ . '/../uploads/gallery/';
         $debugInfo['uploadDir'] = $uploadDir;
 
         // Kreiraj folder ako ne postoji
@@ -314,7 +314,7 @@ if (isset($_GET['delete_image'])) {
     
     if ($imgData) {
         // Delete file
-        $filePath = __DIR__ . '/uploads/gallery/' . $imgData['filename'];
+        $filePath = __DIR__ . '/../uploads/gallery/' . $imgData['filename'];
         if (file_exists($filePath)) {
             unlink($filePath);
         }
@@ -339,7 +339,7 @@ if (isset($_GET['delete_image'])) {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <!-- Glavni stil (isti kao na javnom dijelu) -->
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="../assets/css/style.css">
 </head>
 
 <body class="bg-dark text-light">
@@ -349,9 +349,9 @@ if (isset($_GET['delete_image'])) {
                 <?= $galleryId ? 'Uređivanje galerije' : 'Nova galerija' ?>
             </h1>
             <div class="d-flex gap-2">
-                <a href="admin-galerije.php" class="btn btn-outline-light btn-sm">← Galerije</a>
-                <a href="admin-novosti.php" class="btn btn-outline-light btn-sm">Članci</a>
-                <a href="admin-logout.php" class="btn btn-outline-secondary btn-sm">Odjava</a>
+                <a href="galerije.php" class="btn btn-outline-light btn-sm">← Galerije</a>
+                <a href="novosti.php" class="btn btn-outline-light btn-sm">Članci</a>
+                <a href="logout.php" class="btn btn-outline-secondary btn-sm">Odjava</a>
             </div>
         </div>
 
@@ -440,7 +440,7 @@ if (isset($_GET['delete_image'])) {
                 <h2 class="h5 mb-3">Slike u ovoj galeriji</h2>
                 <div class="row g-3">
                     <?php foreach ($imgs as $img):
-                        $src = 'uploads/gallery/' . $img['filename'];
+                        $src = '../uploads/gallery/' . $img['filename'];
                         ?>
                         <div class="col-6 col-md-3">
                             <div class="border rounded-3 p-2 bg-black">

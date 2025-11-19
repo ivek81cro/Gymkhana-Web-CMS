@@ -1,6 +1,6 @@
 <?php
 define('IN_APP', true);
-require __DIR__ . '/config.php';
+require __DIR__ . '/includes/config.php';
 
 $slug = $_GET['slug'] ?? '';
 
@@ -34,14 +34,14 @@ if ($slug === '') {
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;800&display=swap" rel="stylesheet">
 
   <!-- Custom stilovi (isti kao na index.php) -->
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="assets/css/style.css">
 </head>
 
 <body>
 
   <!-- NAVBAR (isti kao u index.php) -->
   <header id="top">
-    <?php include __DIR__ . '/nav.php'; ?>
+    <?php include __DIR__ . '/includes/nav.php'; ?>
   </header>
 
   <main>
