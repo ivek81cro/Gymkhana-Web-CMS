@@ -42,6 +42,11 @@ $current = basename($_SERVER['SCRIPT_NAME']);
                 </a>
             </li>
             <li class="nav-item">
+                <a class="nav-link <?= ($current === 'galerije.php' || $current === 'galerija.php') ? 'active' : '' ?>"
+                     href="galerije.php">Galerije
+                </a>
+            </li>
+            <li class="nav-item">
                 <a class="nav-link <?= $current === 'index.php#edukacije' ? 'active' : '' ?>"
                      href="index.php#edukacije">Edukacije
                 </a>

@@ -43,11 +43,24 @@ $articles = $stmt->fetchAll();
         <div class="d-flex flex-wrap justify-content-between align-items-baseline gap-3 mb-4">
           <div>
             <div class="mg-section-eyebrow">Novosti</div>
-            <h1 class="mg-section-title">Sve novosti.</h1>
+            <h1 class="mg-section-title">Sve. Novosti.</h1>
           </div>
-          <p class="mg-section-subtitle">
-            Pregled svih vijesti iz Moto Gymkhana Croatia – edukacije, natjecanja i najave događaja.
-          </p>
+        
+          <div class="d-flex flex-column flex-sm-row align-items-sm-center gap-3 ms-auto">
+            <p class="mg-section-subtitle mb-0">
+              Pregled svih vijesti iz Moto Gymkhana Croatia – edukacije, natjecanja i najave događaja.
+            </p>
+        
+            <?php if (is_admin()): ?>
+              <a href="admin-novosti.php" class="btn mg-btn">
+                Admin zona
+              </a>
+            <?php else: ?>
+              <a href="admin-login.php" class="btn mg-btn-outline">
+                Admin prijava
+              </a>
+            <?php endif; ?>
+          </div>
         </div>
 
         <div id="news-list-all" class="row g-4">

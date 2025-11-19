@@ -586,6 +586,7 @@ a:hover {
   border: 1px solid rgba(148, 163, 184, 0.25);
   aspect-ratio: 4 / 3;
   cursor: pointer;
+  display: block;
 }
 
 .mg-gallery-item img {
@@ -620,6 +621,29 @@ a:hover {
   font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.16em;
+}
+
+/* Modal za slike iz galerije */
+.mg-modal-image .modal-content {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+.mg-modal-image .modal-body {
+  padding: 0;
+}
+
+.mg-modal-image img {
+  border-radius: var(--radius-lg);
+}
+
+.mg-modal-image .btn-close {
+  position: absolute;
+  right: 0.75rem;
+  top: 0.75rem;
+  filter: invert(1); /* bijeli X na tamnoj pozadini */
+  z-index: 2;
 }
 
 /* O NAMA */
