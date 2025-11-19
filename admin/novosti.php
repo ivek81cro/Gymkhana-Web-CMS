@@ -188,6 +188,9 @@ $allArticles = $stmtList->fetchAll();
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;800&display=swap" rel="stylesheet">
 
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
   <!-- Custom stilovi (isti kao front) -->
   <link rel="stylesheet" href="../assets/css/style.css">
 </head>
@@ -316,12 +319,7 @@ $allArticles = $stmtList->fetchAll();
                 <div class="form-text">Ako ostaviš prazno, generirat će se iz naslova.</div>
               </div>
 
-              <div class="col-md-6">
-                <label for="image" class="text-secondary">Slika (putanja)</label>
-                <input type="text" name="image" id="image" class="form-control"
-                  placeholder="assets/img/news/europsko_press.jpg"
-                  value="<?= htmlspecialchars($imageValue, ENT_QUOTES, 'UTF-8') ?>">
-              </div>
+
 
               <div class="col-md-4">
                 <label for="category" class="text-secondary">Kategorija</label>
@@ -338,7 +336,7 @@ $allArticles = $stmtList->fetchAll();
 
               <div class="col-md-12">
                 <label for="gallery_id" class="text-secondary">Galerija (opcionalno)</label>
-                <select name="gallery_id" id="gallery_id" class="form-select">
+                <select name="gallery_id" id="gallery_id" class="form-select" onchange="handleGalleryChange()">
                   <option value="">-- Bez galerije --</option>
                   <?php foreach ($galleries as $gal): ?>
                     <option value="<?= (int)$gal['id'] ?>" 
@@ -347,7 +345,27 @@ $allArticles = $stmtList->fetchAll();
                     </option>
                   <?php endforeach; ?>
                 </select>
-                <div class="form-text">Odaberi galeriju koja će se prikazati ispod članka.</div>
+                <div class="form-text">Odaberi galeriju koja će se prikazati ispod članka. Nakon odabira moći ćeš odabrati sliku za članak iz te galerije.</div>
+              </div>
+
+              <div class="col-md-12">
+                <label for="image" class="text-secondary">Slika članka</label>
+                <div class="input-group mb-2">
+                  <input type="text" name="image" id="image" class="form-control"
+                    placeholder="Odaberi galeriju pa sliku iz galerije"
+                    value="<?= htmlspecialchars($imageValue, ENT_QUOTES, 'UTF-8') ?>">
+                  <button type="button" class="btn btn-outline-secondary" id="imagePickerBtn" disabled data-bs-toggle="modal" data-bs-target="#imagePickerModal">
+                    <i class="bi bi-images"></i> Odaberi iz galerije
+                  </button>
+                </div>
+                <div class="form-text text-warning mb-2" id="galleryWarning" style="display: <?= $galleryValue ? 'none' : 'block' ?>;">
+                  <i class="bi bi-info-circle"></i> Prvo odaberi galeriju iznad kako bi mogao odabrati sliku iz te galerije.
+                </div>
+                <div id="imagePreview" class="mb-2" style="display: <?= $imageValue ? 'block' : 'none' ?>;">
+                  <img src="../<?= htmlspecialchars($imageValue, ENT_QUOTES, 'UTF-8') ?>" 
+                       alt="Preview" 
+                       style="max-width: 300px; max-height: 200px; object-fit: cover; border-radius: 8px;">
+                </div>
               </div>
 
               <div class="col-12">
@@ -375,6 +393,153 @@ $allArticles = $stmtList->fetchAll();
       </div>
 
     </div>
+
+    <!-- Image Picker Modal -->
+    <div class="modal fade" id="imagePickerModal" tabindex="-1" aria-labelledby="imagePickerModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="imagePickerModalLabel">Odaberi sliku iz galerije</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <div id="imagePickerContent" class="row g-3">
+              <div class="col-12 text-center text-muted py-5">
+                <div class="spinner-border" role="status">
+                  <span class="visually-hidden">Učitavam...</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Zatvori</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Handle gallery selection change
+      function handleGalleryChange() {
+        const gallerySelect = document.getElementById('gallery_id');
+        const imagePickerBtn = document.getElementById('imagePickerBtn');
+        const galleryWarning = document.getElementById('galleryWarning');
+        const imageInput = document.getElementById('image');
+        const imagePreview = document.getElementById('imagePreview');
+        
+        if (gallerySelect.value) {
+          // Galerija je odabrana - omogući gumb
+          imagePickerBtn.disabled = false;
+          galleryWarning.style.display = 'none';
+        } else {
+          // Nema galerije - onemogući gumb i očisti sliku
+          imagePickerBtn.disabled = true;
+          galleryWarning.style.display = 'block';
+          imageInput.value = '';
+          imagePreview.style.display = 'none';
+        }
+      }
+
+      // Load images when modal is opened
+      document.getElementById('imagePickerModal').addEventListener('show.bs.modal', function() {
+        const galleryId = document.getElementById('gallery_id').value;
+        const contentDiv = document.getElementById('imagePickerContent');
+        
+        if (!galleryId) {
+          contentDiv.innerHTML = '<div class="col-12 text-center text-muted py-5"><p>Odaberi galeriju prije odabira slike.</p></div>';
+          return;
+        }
+        
+        // Show loading
+        contentDiv.innerHTML = '<div class="col-12 text-center text-muted py-5"><div class="spinner-border" role="status"><span class="visually-hidden">Učitavam...</span></div></div>';
+        
+        // Fetch images from selected gallery
+        fetch('ajax-get-gallery-images.php?gallery_id=' + galleryId)
+          .then(response => response.json())
+          .then(data => {
+            if (data.error) {
+              contentDiv.innerHTML = '<div class="col-12 text-center text-danger py-5"><p>' + data.error + '</p></div>';
+              return;
+            }
+            
+            if (data.images.length === 0) {
+              contentDiv.innerHTML = '<div class="col-12 text-center text-muted py-5"><p>Nema slika u odabranoj galeriji.</p></div>';
+              return;
+            }
+            
+            // Build image grid
+            let html = '';
+            data.images.forEach(img => {
+              html += `
+                <div class="col-6 col-md-4 col-lg-3">
+                  <div class="card h-100 image-picker-card" style="cursor: pointer;" 
+                       onclick="selectImage('${img.image_path}')">
+                    <img src="../${img.image_path}" 
+                         class="card-img-top" 
+                         style="height: 150px; object-fit: cover;"
+                         alt="Slika">
+                    <div class="card-body p-2 text-center">
+                      <small class="text-muted">${img.display_name}</small>
+                    </div>
+                  </div>
+                </div>
+              `;
+            });
+            
+            contentDiv.innerHTML = html;
+          })
+          .catch(error => {
+            contentDiv.innerHTML = '<div class="col-12 text-center text-danger py-5"><p>Greška pri učitavanju slika.</p></div>';
+            console.error('Error:', error);
+          });
+      });
+
+      // Image picker functionality
+      function selectImage(imagePath) {
+        const imageInput = document.getElementById('image');
+        const imagePreview = document.getElementById('imagePreview');
+        const previewImg = imagePreview.querySelector('img');
+        
+        imageInput.value = imagePath;
+        previewImg.src = '../' + imagePath;
+        imagePreview.style.display = 'block';
+        
+        // Close modal
+        const modal = bootstrap.Modal.getInstance(document.getElementById('imagePickerModal'));
+        modal.hide();
+      }
+
+      // Preview image when manually typing path
+      document.getElementById('image').addEventListener('input', function() {
+        const imagePreview = document.getElementById('imagePreview');
+        const previewImg = imagePreview.querySelector('img');
+        
+        if (this.value) {
+          previewImg.src = '../' + this.value;
+          imagePreview.style.display = 'block';
+        } else {
+          imagePreview.style.display = 'none';
+        }
+      });
+
+      // Add hover effect to image picker cards
+      document.addEventListener('DOMContentLoaded', function() {
+        const style = document.createElement('style');
+        style.textContent = `
+          .image-picker-card {
+            transition: transform 0.2s, box-shadow 0.2s;
+          }
+          .image-picker-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+          }
+        `;
+        document.head.appendChild(style);
+        
+        // Check initial state
+        handleGalleryChange();
+      });
+    </script>
   </main>
 
   <!-- (Opcionalno) mali footer da znaš da si na admin stranici -->
