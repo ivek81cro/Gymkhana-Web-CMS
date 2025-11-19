@@ -44,6 +44,32 @@ function resizeImage($source, $destination, $maxWidth = 1920, $maxHeight = 1080,
         return false;
     }
 
+    // Ispravi orijentaciju na osnovu EXIF podataka (za fotografije s mobitela)
+    if ($imageType == IMAGETYPE_JPEG && function_exists('exif_read_data')) {
+        $exif = @exif_read_data($source);
+        if ($exif && !empty($exif['Orientation'])) {
+            switch ($exif['Orientation']) {
+                case 3:
+                    $image = imagerotate($image, 180, 0);
+                    break;
+                case 6:
+                    $image = imagerotate($image, -90, 0);
+                    // Zamijeni širinu i visinu nakon rotacije
+                    $temp = $origWidth;
+                    $origWidth = $origHeight;
+                    $origHeight = $temp;
+                    break;
+                case 8:
+                    $image = imagerotate($image, 90, 0);
+                    // Zamijeni širinu i visinu nakon rotacije
+                    $temp = $origWidth;
+                    $origWidth = $origHeight;
+                    $origHeight = $temp;
+                    break;
+            }
+        }
+    }
+
     // Izračunaj nove dimenzije uz održavanje omjera
     $ratio = min($maxWidth / $origWidth, $maxHeight / $origHeight);
     
