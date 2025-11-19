@@ -1,8 +1,41 @@
-<Files "config.php">
+# Protect sensitive files
+<FilesMatch "^(config\.php|\.gitignore|\.htaccess|\.user\.ini)$">
     Require all denied
-</Files>
+</FilesMatch>
 
-php_value upload_max_filesize 64M
-php_value post_max_size 64M
-php_value max_file_uploads 50
-php_value memory_limit 256M
+# Protect includes directory from direct access
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteRule ^includes/ - [F,L]
+    RewriteRule ^dev/ - [F,L]
+</IfModule>
+
+# Prevent directory listing
+Options -Indexes
+
+# PHP security settings
+<IfModule mod_php7.c>
+    php_flag display_errors Off
+    php_flag log_errors On
+    php_value error_log /tmp/php_errors.log
+</IfModule>
+
+# Set default charset
+AddDefaultCharset UTF-8
+
+# Enable compression for better performance
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript application/javascript application/json
+</IfModule>
+
+# Browser caching for static files
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType image/jpeg "access plus 1 year"
+    ExpiresByType image/png "access plus 1 year"
+    ExpiresByType image/gif "access plus 1 year"
+    ExpiresByType image/webp "access plus 1 year"
+    ExpiresByType text/css "access plus 1 month"
+    ExpiresByType application/javascript "access plus 1 month"
+    ExpiresByType application/pdf "access plus 1 month"
+</IfModule>
