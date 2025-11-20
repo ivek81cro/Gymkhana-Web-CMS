@@ -1,0 +1,58 @@
+# robots.txt for Moto Gymkhana Croatia
+# https://www.motogymkhana.hr/robots.txt
+
+User-agent: *
+
+# Allow crawling of public pages
+Allow: /
+Allow: /index.php
+Allow: /novosti.php
+Allow: /edukacije.php
+Allow: /galerije.php
+Allow: /clanak/
+Allow: /galerija/
+
+# Disallow admin panel
+Disallow: /admin/
+Disallow: /admin
+
+# Disallow backend directories
+Disallow: /includes/
+Disallow: /dev/
+Disallow: /docs/
+
+# Disallow uploads (let images be indexed via pages)
+Disallow: /uploads/
+
+# Disallow config files
+Disallow: /.htaccess
+Disallow: /.gitignore
+Disallow: /config.php
+
+# Disallow query string URLs (prefer friendly URLs)
+Disallow: /*?slug=
+Disallow: /*?id=
+Disallow: /*&
+
+# Sitemap location
+Sitemap: https://www.motogymkhana.hr/sitemap.xml
+
+# Crawl delay (optional, be nice to server)
+# Crawl-delay: 10
+
+# Specific bots (optional)
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+# Block bad bots (optional)
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: SemrushBot
+Disallow: /
+
+User-agent: MJ12bot
+Disallow: /

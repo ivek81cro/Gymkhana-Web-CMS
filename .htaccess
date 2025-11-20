@@ -1,48 +1,168 @@
-# Protect sensitive files
-<FilesMatch "^(config\.php|\.gitignore|\.htaccess|\.user\.ini)$">
-    Require all denied
-</FilesMatch>
+# ============================================================================
+# Moto Gymkhana Croatia CMS - Apache Configuration
+# Requires: mod_rewrite, mod_headers, mod_deflate, mod_expires
+# ============================================================================
 
-# Protect includes directory from direct access
 <IfModule mod_rewrite.c>
     RewriteEngine On
+    RewriteBase /
+
+    # ========================================================================
+    # FRIENDLY URLs (SEO)
+    # ========================================================================
+    
+    # Sitemap: /sitemap.xml -> /sitemap.xml.php
+    RewriteRule ^sitemap\.xml$ sitemap.xml.php [L]
+    
+    # Articles: /clanak/article-slug -> /clanak.php?slug=article-slug
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^clanak/([a-z0-9-]+)$ clanak.php?slug=$1 [L,QSA]
+
+    # Galleries: /galerija/gallery-slug -> /galerija.php?slug=gallery-slug
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^galerija/([a-z0-9-]+)$ galerija.php?slug=$1 [L,QSA]
+
+    # ========================================================================
+    # SECURITY
+    # ========================================================================
+    
+    # Protect sensitive directories
     RewriteRule ^includes/ - [F,L]
     RewriteRule ^dev/ - [F,L]
+    RewriteRule ^docs/ - [F,L]
+    
+    # Block SQL injection attempts in URLs
+    RewriteCond %{QUERY_STRING} (\<|%3C).*script.*(\>|%3E) [NC,OR]
+    RewriteCond %{QUERY_STRING} GLOBALS(=|\[|\%[0-9A-Z]{0,2}) [OR]
+    RewriteCond %{QUERY_STRING} _REQUEST(=|\[|\%[0-9A-Z]{0,2})
+    RewriteRule ^(.*)$ index.php [F,L]
+    
+    # Block access to hidden files (except .well-known for Let's Encrypt)
+    RewriteCond %{REQUEST_URI} !^/\.well-known/
+    RewriteRule (^\.|/\.) - [F]
 </IfModule>
+
+# Protect sensitive files
+<FilesMatch "^(config\.php|config\.sample\.php|\.env|\.gitignore|\.htaccess|\.user\.ini)$">
+    Require all denied
+</FilesMatch>
 
 # Prevent directory listing
 Options -Indexes
 
-# PHP security settings
+# ============================================================================
+# SECURITY HEADERS
+# ============================================================================
+
+<IfModule mod_headers.c>
+    # Prevent clickjacking attacks
+    Header always set X-Frame-Options "SAMEORIGIN"
+    
+    # Enable XSS filter in browsers
+    Header always set X-XSS-Protection "1; mode=block"
+    
+    # Prevent MIME type sniffing
+    Header always set X-Content-Type-Options "nosniff"
+    
+    # Referrer Policy
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+    
+    # Remove X-Powered-By header (hide PHP version)
+    Header unset X-Powered-By
+</IfModule>
+
+# ============================================================================
+# PHP SETTINGS
+# ============================================================================
+
 <IfModule mod_php7.c>
+    # Security
     php_flag display_errors Off
     php_flag log_errors On
     php_value error_log /tmp/php_errors.log
+    
+    # File upload limits
+    php_value upload_max_filesize 20M
+    php_value post_max_size 20M
+    php_value max_execution_time 300
+    php_value max_input_time 300
+    
+    # Session security
+    php_flag session.cookie_httponly On
+    php_flag session.use_strict_mode On
+    # Uncomment for HTTPS in production:
+    # php_flag session.cookie_secure On
 </IfModule>
 
 # Set default charset
 AddDefaultCharset UTF-8
 
-# Enable compression for better performance
+# ============================================================================
+# PERFORMANCE OPTIMIZATION
+# ============================================================================
+
+# Enable Gzip compression
 <IfModule mod_deflate.c>
-    AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript application/javascript application/json
+    AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript application/javascript application/json application/xml
 </IfModule>
 
 # Browser caching for static files
 <IfModule mod_expires.c>
     ExpiresActive On
+    
+    # Images
     ExpiresByType image/jpeg "access plus 1 year"
     ExpiresByType image/png "access plus 1 year"
     ExpiresByType image/gif "access plus 1 year"
     ExpiresByType image/webp "access plus 1 year"
+    ExpiresByType image/svg+xml "access plus 1 year"
+    ExpiresByType image/x-icon "access plus 1 year"
+    
+    # CSS and JavaScript
     ExpiresByType text/css "access plus 1 month"
     ExpiresByType application/javascript "access plus 1 month"
+    
+    # Fonts
+    ExpiresByType font/woff2 "access plus 1 year"
+    ExpiresByType font/woff "access plus 1 year"
+    ExpiresByType font/ttf "access plus 1 year"
+    
+    # Other
     ExpiresByType application/pdf "access plus 1 month"
+    
+    # HTML (don't cache)
+    ExpiresByType text/html "access plus 0 seconds"
 </IfModule>
 
-# Allow TinyMCE assets
+# Cache-Control headers
+<IfModule mod_headers.c>
+    # Don't cache dynamic content
+    <FilesMatch "\.(html|htm|php)$">
+        Header set Cache-Control "no-cache, no-store, must-revalidate"
+        Header set Pragma "no-cache"
+        Header set Expires 0
+    </FilesMatch>
+    
+    # Cache static assets
+    <FilesMatch "\.(jpg|jpeg|png|gif|webp|svg|css|js|woff|woff2|ttf|ico)$">
+        Header set Cache-Control "public, max-age=31536000, immutable"
+    </FilesMatch>
+</IfModule>
+
+# Allow TinyMCE and external assets (CORS)
 <FilesMatch "\.(js|css|woff|woff2|ttf|eot|svg)$">
     <IfModule mod_headers.c>
         Header set Access-Control-Allow-Origin "*"
     </IfModule>
 </FilesMatch>
+
+# ============================================================================
+# ERROR PAGES
+# ============================================================================
+
+# Custom error pages (create these files if needed)
+# ErrorDocument 404 /404.php
+# ErrorDocument 403 /403.php
+# ErrorDocument 500 /500.php
