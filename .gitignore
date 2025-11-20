@@ -1,8 +1,11 @@
 # Development tools
 /dev/
+*.log
+*.tmp
 
 # User uploads
 /uploads/
+/assets/img/
 
 # Config file with credentials
 /includes/config.php
@@ -10,3 +13,40 @@
 # Server specific
 .user.ini
 .htaccess
+php.ini
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# IDE files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Backup files
+*.bak
+*.backup
+*.sql
+*.sql.gz
+*~
+
+# Cache and temporary files
+/cache/
+/tmp/
+*.cache
+
+# Node modules (if using npm/build tools in future)
+node_modules/
+package-lock.json
+
+# Composer (if using PHP packages in future)
+/vendor/
+composer.lock
