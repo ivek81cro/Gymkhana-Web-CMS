@@ -109,23 +109,7 @@ $galleries = $stmt->fetchAll(PDO::FETCH_ASSOC);
     </section>
   </main>
 
-  <!-- FOOTER -->
-  <footer class="py-4 mt-5 border-top border-secondary-subtle">
-    <div class="container">
-      <div class="row gy-3">
-        <div class="col-md-6">
-          <p class="small text-secondary mb-0">
-            © <?= date('Y') ?> Moto Gymkhana Croatia
-          </p>
-        </div>
-        <div class="col-md-6 text-md-end">
-          <a href="index.php" class="text-decoration-none text-secondary small me-3">Početna</a>
-          <a href="novosti.php" class="text-decoration-none text-secondary small me-3">Novosti</a>
-          <a href="galerije.php" class="text-decoration-none text-secondary small">Galerije</a>
-        </div>
-      </div>
-    </div>
-  </footer>
+  <?php include __DIR__ . '/includes/footer.php'; ?>
 
   <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

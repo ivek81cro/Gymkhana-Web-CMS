@@ -568,70 +568,11 @@ $educationArticles = $stmtEdu->fetchAll();
 
   </main>
 
-  <!-- FOOTER / KONTAKT -->
-  <footer class="site-footer" id="kontakt">
-    <div class="container py-4">
-      <div class="row gy-4">
-        <div class="col-lg-4">
-          <div class="mg-footer-brand">
-            <div class="mg-footer-brand-title">Udruga “Moto Gymkhana Croatia”</div>
-            <p>
-              Pridruži se treningu, edukaciji ili natjecanju i upoznaj koliko je vožnja sigurna i zabavna kad imaš
-              kontrolu – i ekipu iza sebe.
-            </p>
-          </div>
-        </div>
-        <div class="col-6 col-lg-2">
-          <div class="mg-footer-heading">Edukacija</div>
-          <div class="mg-footer-list">
-            <a href="edukacije.php">Sve edukacije</a>
-            <a href="#edukacije">Škola sigurne vožnje</a>
-            <a href="#edukacije">Edukacijski poligoni</a>
-            <a href="#edukacije">Moto Gymkhana trening</a>
-          </div>
-        </div>
-        <div class="col-6 col-lg-2">
-          <div class="mg-footer-heading">Linkovi</div>
-          <div class="mg-footer-list">
-            <a href="#natjecanja">Natjecanja</a>
-            <a href="#natjecanja">Postani član</a>
-            <a href="#natjecanja">Sponzori</a>
-          </div>
-        </div>
-        <div class="col-lg-4">
-          <div class="mg-footer-heading">Kontakt</div>
-          <div class="mg-footer-list">
-            <span>Zagorska ul. 48, 10000 Zagreb</span>
-            <a href="tel:+385992360091">+385 (0)99 236 0091</a>
-            <a href="mailto:info@motogymkhana.hr">info@motogymkhana.hr</a>
-            <a href="/privacy-policy">MotoGymkhana Croatia Privacy Policy</a>
-          </div>
-        </div>
-      </div>
 
-      <div
-        class="d-flex flex-wrap justify-content-between align-items-center gap-2 mt-4 pt-3 border-top border-secondary-subtle">
-        <span class="small text-secondary">
-          © <span id="year"></span> Moto Gymkhana Croatia. Sva prava pridržana.
-        </span>
-        <div class="d-flex flex-wrap gap-2">
-          <a href="https://www.facebook.com/motogymkhanacroatia" target="_blank" rel="noreferrer"
-            class="mg-footer-badge">Facebook</a>
-          <a href="https://www.instagram.com/moto_gymkhana_croatia" target="_blank" rel="noreferrer"
-            class="mg-footer-badge">Instagram</a>
-          <a href="https://www.youtube.com/@motogymkhanacroatia" target="_blank" rel="noreferrer"
-            class="mg-footer-badge">YouTube</a>
-        </div>
-      </div>
-    </div>
-  </footer>
+  <?php include __DIR__ . '/includes/footer.php'; ?>
 
   <!-- Bootstrap JS bundle -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
-  <script>
-    document.getElementById('year').textContent = new Date().getFullYear();
-  </script>
 
   <a href="#top" class="btn btn-primary mg-back-to-top" aria-label="Povratak na vrh">
     ↑

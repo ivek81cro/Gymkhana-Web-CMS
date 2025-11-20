@@ -101,22 +101,7 @@ $articles = $stmt->fetchAll();
     </div>
   </section>
 
-  <!-- Footer -->
-  <footer class="py-4 border-top">
-    <div class="container">
-      <div class="row gy-3">
-        <div class="col-md-6 text-center text-md-start">
-          <p class="small mb-0 text-secondary">© <?= date('Y') ?> Moto Gymkhana Croatia. Sva prava pridržana.</p>
-        </div>
-        <div class="col-md-6 text-center text-md-end">
-          <a href="index.php" class="text-secondary text-decoration-none small me-3">Početna</a>
-          <a href="novosti.php" class="text-secondary text-decoration-none small me-3">Novosti</a>
-          <a href="edukacije.php" class="text-secondary text-decoration-none small me-3">Edukacije</a>
-          <a href="galerije.php" class="text-secondary text-decoration-none small">Galerije</a>
-        </div>
-      </div>
-    </div>
-  </footer>
+  <?php include __DIR__ . '/includes/footer.php'; ?>
 
   <!-- Bootstrap Bundle JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
