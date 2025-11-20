@@ -1,6 +1,7 @@
 <?php
 define('IN_APP', true);
 require __DIR__ . '/includes/config.php';
+require __DIR__ . '/includes/seo-meta.php';
 
 $slug = $_GET['slug'] ?? '';
 
@@ -33,7 +34,33 @@ if ($slug === '') {
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title><?= $gallery ? htmlspecialchars($gallery['name'], ENT_QUOTES, 'UTF-8') : 'Galerija' ?> – Moto Gymkhana Croatia</title>
+  
+  <?php
+  if ($gallery) {
+      $description = !empty($gallery['description']) 
+          ? $gallery['description'] 
+          : 'Fotogalerija: ' . $gallery['name'] . ' - Moto Gymkhana Croatia';
+      
+      // Get first image for OG image
+      $ogImage = null;
+      if (!empty($images[0]['filename'])) {
+          $ogImage = 'https://' . $_SERVER['HTTP_HOST'] . '/uploads/gallery/' . $images[0]['filename'];
+      }
+      
+      generate_seo_meta([
+          'title' => $gallery['name'],
+          'description' => $description,
+          'keywords' => 'galerija, foto, ' . $gallery['name'] . ', moto gymkhana',
+          'image' => $ogImage,
+          'type' => 'website'
+      ]);
+  } else {
+      generate_seo_meta([
+          'title' => 'Galerija nije pronađena',
+          'description' => 'Tražena galerija nije pronađena.'
+      ]);
+  }
+  ?>
 
   <!-- Bootstrap 5 -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">

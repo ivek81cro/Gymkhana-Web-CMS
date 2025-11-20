@@ -1,6 +1,7 @@
 <?php
 define('IN_APP', true);
 require __DIR__ . '/includes/config.php';
+require __DIR__ . '/includes/seo-meta.php';
 
 $slug = $_GET['slug'] ?? '';
 
@@ -23,7 +24,32 @@ if ($slug === '') {
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Članak – Moto Gymkhana Croatia</title>
+  
+  <?php
+  if ($article) {
+      // Extract excerpt or content preview
+      $description = !empty($article['excerpt']) 
+          ? $article['excerpt'] 
+          : strip_tags(mb_substr($article['content'], 0, 160));
+      
+      generate_seo_meta([
+          'title' => $article['title'],
+          'description' => $description,
+          'keywords' => $article['tags'] ?? 'moto gymkhana, hrvatska',
+          'image' => $article['image'] ?? null,
+          'type' => 'article',
+          'author' => 'Moto Gymkhana Croatia',
+          'published_time' => date('c', strtotime($article['created_at'])),
+          'section' => $article['category'] ?? 'Novosti'
+      ]);
+      generate_article_schema($article);
+  } else {
+      generate_seo_meta([
+          'title' => 'Članak nije pronađen',
+          'description' => 'Traženi članak nije pronađen na Moto Gymkhana Croatia.'
+      ]);
+  }
+  ?>
 
   <!-- Bootstrap 5 -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">

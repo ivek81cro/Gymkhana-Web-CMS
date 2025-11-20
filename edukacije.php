@@ -1,6 +1,7 @@
 <?php
 define('IN_APP', true);
 require __DIR__ . '/includes/config.php';
+require __DIR__ . '/includes/seo-meta.php';
 
 // Dohvati sve članke iz kategorije "Edukacija"
 $stmt = $pdo->prepare("
@@ -17,8 +18,16 @@ $articles = $stmt->fetchAll();
 <html lang="hr">
 <head>
   <meta charset="utf-8">
-  <title>Edukacije – Moto Gymkhana Croatia</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <?php
+  generate_seo_meta([
+      'title' => 'Edukacije - Škola sigurne vožnje motocikla',
+      'description' => 'Programi edukacije za početnike, povratnike i iskusne vozače. Učimo sigurnosnu vožnju, preciznu kontrolu i pripremu za natjecanja.',
+      'keywords' => 'edukacija, škola vožnje, motocikl, trening, poligon, gymkhana trening',
+      'type' => 'website'
+  ]);
+  ?>
   
   <!-- Bootstrap 5 -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">

@@ -24,6 +24,9 @@ require_once __DIR__ . '/error-handler.php';
 // Load activity logger
 require_once __DIR__ . '/logger.php';
 
+// Load SEO meta tags helper (optional, loaded per-page as needed)
+// require_once __DIR__ . '/seo-meta.php';
+
 // =============================================================================
 // DATABASE CONFIGURATION
 // =============================================================================

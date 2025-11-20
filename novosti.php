@@ -1,6 +1,7 @@
 ﻿<?php
 define('IN_APP', true);
 require __DIR__ . '/includes/config.php';
+require __DIR__ . '/includes/seo-meta.php';
 
 $stmt = $pdo->prepare("
     SELECT id, slug, title, excerpt, image, category, created_at
@@ -18,7 +19,15 @@ $articles = $stmt->fetchAll();
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Novosti â€“ Moto Gymkhana Croatia</title>
+  
+  <?php
+  generate_seo_meta([
+      'title' => 'Novosti',
+      'description' => 'Sve najnovije vijesti, najave događaja i rezultati natjecanja iz svijeta moto gymkhane u Hrvatskoj.',
+      'keywords' => 'novosti, moto gymkhana, natjecanja, događaji, hrvatska',
+      'type' => 'website'
+  ]);
+  ?>
 
   <!-- Bootstrap 5 -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">

@@ -1,6 +1,7 @@
 <?php
 define('IN_APP', true);
 require __DIR__ . '/includes/config.php';
+require __DIR__ . '/includes/seo-meta.php';
 
 // Zadnja 3 članka iz kategorije "Novosti" za mini-listu na početnoj
 $stmtMini = $pdo->prepare("
@@ -30,7 +31,16 @@ $educationArticles = $stmtEdu->fetchAll();
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Moto Gymkhana Croatia</title>
+  
+  <?php
+  generate_seo_meta([
+      'title' => 'Moto Gymkhana Croatia - Škola sigurne vožnje',
+      'description' => 'Moto Gymkhana Croatia je škola sigurne vožnje motocikla. Učimo tehnike precizne vožnje, sigurnosnu vožnju i pripremu za natjecanja u Hrvatskoj.',
+      'keywords' => 'moto gymkhana, škola vožnje motocikla, sigurna vožnja, hrvatska, gymkhana hrvatska, precizna vožnja, natjecanja',
+      'type' => 'website'
+  ]);
+  generate_organization_schema();
+  ?>
 
   <!-- Bootstrap 5 -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
