@@ -54,6 +54,13 @@ $baseUrl = $inAdmin ? '../' : '';
                      href="<?= $baseUrl ?>galerije.php">Galerije
                 </a>
             </li>
+            <?php if ($inAdmin && is_admin()): ?>
+            <li class="nav-item">
+                <a class="nav-link <?= $current === 'logs.php' ? 'active' : '' ?>"
+                     href="<?= $baseUrl ?>admin/logs.php">Logovi
+                </a>
+            </li>
+            <?php endif; ?>
             <li class="nav-item">
                 <a class="nav-link <?= $current === 'index.php#natjecanja' ? 'active' : '' ?>"
                      href="<?= $baseUrl ?>index.php#natjecanja">Natjecanja

@@ -15,9 +15,17 @@ if (isset($_GET['delete'])) {
             if (!isset($_GET['token']) || !verify_csrf_token($_GET['token'])) {
                 $errors[] = 'Nevažeći sigurnosni token.';
             } else {
+                // Get article title before deleting
+                $stmt = $pdo->prepare("SELECT title FROM articles WHERE id = :id");
+                $stmt->execute([':id' => $deleteId]);
+                $articleTitle = $stmt->fetchColumn();
+                
                 $stmt = $pdo->prepare("DELETE FROM articles WHERE id = :id");
                 $stmt->execute([':id' => $deleteId]);
                 $success = 'Članak je uspješno obrisan.';
+                
+                // Log article deletion
+                log_activity('delete_article', "Article ID: {$deleteId}, Title: {$articleTitle}", 'success');
                 
                 // Redirect da se ukloni delete parametar iz URL-a
                 header('Location: novosti.php?deleted=1');
@@ -155,6 +163,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         ]);
 
         $success = 'Članak je uspješno ažuriran.';
+        
+        // Log article update
+        log_activity('update_article', "Article ID: {$article['id']}, Title: {$title}, Status: {$status}", 'success');
 
         // Osvježi $article podacima koje smo upravo spremili
         $article['slug'] = $slug;
@@ -186,7 +197,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           ':created_at' => $createdAt,
         ]);
 
+        $newArticleId = $pdo->lastInsertId();
         $success = 'Članak je uspješno spremljen.';
+        
+        // Log article creation
+        log_activity('create_article', "Article ID: {$newArticleId}, Title: {$title}, Status: {$status}", 'success');
+        
         // Očisti formu nakon spremanja novog članka
         $_POST = [];
       }

@@ -223,6 +223,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_gallery'])) {
                 ':description' => $description,
                 ':id' => $galleryId,
             ]);
+            
+            // Log gallery update
+            log_activity('update_gallery', "Gallery ID: {$galleryId}, Name: {$name}", 'success');
         } else {
             $stmt = $pdo->prepare("
                 INSERT INTO galleries (name, slug, description, created_at)
@@ -234,6 +237,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_gallery'])) {
                 ':description' => $description,
             ]);
             $galleryId = (int) $pdo->lastInsertId();
+            
+            // Log gallery creation
+            log_activity('create_gallery', "Gallery ID: {$galleryId}, Name: {$name}", 'success');
         }
 
         $gallery['name'] = $name;
@@ -309,6 +315,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_gallery'])) {
             $success = 'Galerija je spremljena.';
             if ($uploadedCount > 0) {
                 $success .= ' Uspješno uploadano slika: ' . $uploadedCount . '.';
+                
+                // Log image upload
+                log_activity('upload_images', "Gallery ID: {$galleryId}, Images uploaded: {$uploadedCount}", 'success');
             }
             if ($fileErrors) {
                 $errors = array_merge($errors, $fileErrors);

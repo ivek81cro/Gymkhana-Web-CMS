@@ -32,6 +32,8 @@
     RewriteRule ^includes/ - [F,L]
     RewriteRule ^dev/ - [F,L]
     RewriteRule ^docs/ - [F,L]
+    RewriteRule ^logs/ - [F,L]
+    RewriteRule ^errors/ - [F,L]
     
     # Block SQL injection attempts in URLs
     RewriteCond %{QUERY_STRING} (\<|%3C).*script.*(\>|%3E) [NC,OR]

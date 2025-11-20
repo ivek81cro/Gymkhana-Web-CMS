@@ -1,0 +1,7 @@
+# Ignore all log files
+*.log
+*.log.*
+*.backup
+
+# But track this .gitignore file
+!.gitignore

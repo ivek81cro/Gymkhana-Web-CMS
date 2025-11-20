@@ -41,10 +41,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 
                 $_SESSION['is_admin'] = true;
                 $_SESSION['admin_verified'] = true;
+                $_SESSION['admin_username'] = $username;
                 $_SESSION['login_attempts'] = []; // Reset pokušaja
                 
                 // Regeneriraj CSRF token
                 unset($_SESSION['csrf_token']);
+                
+                // Log successful login
+                log_activity('login', "User: {$username}", 'success');
                 
                 header('Location: novosti.php');
                 exit;
@@ -52,6 +56,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 // Zabilježi neuspješan pokušaj
                 $_SESSION['login_attempts'][] = time();
                 $error = 'Pogrešno korisničko ime ili lozinka.';
+                
+                // Log failed login attempt
+                $attempts = count($_SESSION['login_attempts']);
+                log_security('failed_login', "Username: {$username}, Attempts: {$attempts}", 'medium');
             }
         }
     }

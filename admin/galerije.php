@@ -13,9 +13,19 @@ if (isset($_GET['delete'])) {
     $id = (int)$_GET['delete'];
 
     if ($id > 0) {
+        // Get gallery name before deleting
+        $stmt = $pdo->prepare("SELECT name FROM galleries WHERE id = :id");
+        $stmt->execute([':id' => $id]);
+        $galleryName = $stmt->fetchColumn();
+        
         $stmt = $pdo->prepare("DELETE FROM galleries WHERE id = :id");
         $stmt->execute([':id' => $id]);
         $success = 'Galerija je obrisana (ako je postojala).';
+        
+        // Log gallery deletion
+        if ($galleryName) {
+            log_activity('delete_gallery', "Gallery ID: {$id}, Name: {$galleryName}", 'success');
+        }
     }
 }
 
