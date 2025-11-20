@@ -50,3 +50,4 @@ package-lock.json
 # Composer (if using PHP packages in future)
 /vendor/
 composer.lock
+includes/generate-password.php

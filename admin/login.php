@@ -10,16 +10,50 @@ if (is_admin()) {
 
 $error = null;
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $username = trim($_POST['username'] ?? '');
-    $password = trim($_POST['password'] ?? '');
+// Rate limiting - max 5 pokušaja u 15 minuta
+if (!isset($_SESSION['login_attempts'])) {
+    $_SESSION['login_attempts'] = [];
+}
 
-    if ($username === ADMIN_USERNAME && $password === ADMIN_PASSWORD) {
-        $_SESSION['is_admin'] = true;
-        header('Location: novosti.php');
-        exit;
+// Očisti stare pokušaje (starije od 15 min)
+$_SESSION['login_attempts'] = array_filter(
+    $_SESSION['login_attempts'],
+    fn($time) => $time > time() - 900
+);
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Provjeri broj pokušaja
+    if (count($_SESSION['login_attempts']) >= 5) {
+        $error = 'Previše neuspješnih pokušaja. Pokušajte ponovno za 15 minuta.';
     } else {
-        $error = 'Pogrešno korisničko ime ili lozinka.';
+        // CSRF zaštita
+        $csrfToken = $_POST['csrf_token'] ?? '';
+        if (!verify_csrf_token($csrfToken)) {
+            $error = 'Nevažeći sigurnosni token. Osvježite stranicu.';
+        } else {
+            $username = trim($_POST['username'] ?? '');
+            $password = trim($_POST['password'] ?? '');
+
+            // Password verify sa hash
+            if ($username === ADMIN_USERNAME && password_verify($password, ADMIN_PASSWORD_HASH)) {
+                // Regeneriraj session ID protiv session fixation
+                regenerate_session();
+                
+                $_SESSION['is_admin'] = true;
+                $_SESSION['admin_verified'] = true;
+                $_SESSION['login_attempts'] = []; // Reset pokušaja
+                
+                // Regeneriraj CSRF token
+                unset($_SESSION['csrf_token']);
+                
+                header('Location: novosti.php');
+                exit;
+            } else {
+                // Zabilježi neuspješan pokušaj
+                $_SESSION['login_attempts'][] = time();
+                $error = 'Pogrešno korisničko ime ili lozinka.';
+            }
+        }
     }
 }
 ?>
@@ -72,6 +106,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="card mg-card">
               <div class="card-body p-4">
                 <form method="post">
+                  <!-- CSRF Token -->
+                  <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(generate_csrf_token(), ENT_QUOTES, 'UTF-8') ?>">
+                  
                   <div class="mb-3">
                     <label for="username" class="form-label text-secondary">Korisničko ime</label>
                     <input type="text" name="username" id="username" class="form-control" required autofocus>
