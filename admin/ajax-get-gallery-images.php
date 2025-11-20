@@ -7,7 +7,7 @@
  * 
  * @method POST
  * @param int gallery_id - ID of the gallery to fetch images from
- * @return JSON - {success: bool, images: array} or {error: string}
+ * @return void Outputs JSON string - {success: bool, images: array} or {error: string}
  * 
  * @example
  * POST ajax-get-gallery-images.php
