@@ -2,14 +2,27 @@
 define('IN_APP', true);
 require __DIR__ . '/includes/config.php';
 
-// Zadnja 3 članka za mini-listu na početnoj
-$stmtMini = $pdo->query("
+// Zadnja 3 članka iz kategorije "Novosti" za mini-listu na početnoj
+$stmtMini = $pdo->prepare("
     SELECT slug, title, excerpt, content, created_at
     FROM articles
+    WHERE category = :category
     ORDER BY created_at DESC
     LIMIT 3
 ");
+$stmtMini->execute([':category' => 'Novosti']);
 $latestArticles = $stmtMini->fetchAll();
+
+// Zadnja 3 članka iz kategorije "Edukacija" za sekciju edukacije
+$stmtEdu = $pdo->prepare("
+    SELECT slug, title, excerpt, content, image, created_at
+    FROM articles
+    WHERE category = :category
+    ORDER BY created_at DESC
+    LIMIT 3
+");
+$stmtEdu->execute([':category' => 'Edukacija']);
+$educationArticles = $stmtEdu->fetchAll();
 ?>
 <!DOCTYPE html>
 <html lang="hr">
@@ -234,12 +247,57 @@ $latestArticles = $stmtMini->fetchAll();
                   poligone prema pravilima Moto Gymkhane.
                 </p>
                 <p class="mg-edu-meta">
-                  Cilj: postizanje brzine kroz preciznost, ne samo “gas do kraja”.
+                  Cilj: postizanje brzine kroz preciznost, ne samo "gas do kraja".
                 </p>
               </div>
             </article>
           </div>
         </div>
+        
+        <!-- Prikaži članke iz kategorije Edukacija ako postoje -->
+        <?php if (!empty($educationArticles)): ?>
+          <div class="mt-5">
+            <h3 class="text-center mb-4 text-secondary">Najnovije edukacije</h3>
+            <div class="row gy-4">
+              <?php foreach ($educationArticles as $eduArticle): ?>
+                <div class="col-md-4">
+                  <article class="card mg-card h-100">
+                    <?php if (!empty($eduArticle['image'])): ?>
+                      <img src="<?= htmlspecialchars($eduArticle['image'], ENT_QUOTES, 'UTF-8') ?>" 
+                           class="card-img-top" 
+                           alt="<?= htmlspecialchars($eduArticle['title'], ENT_QUOTES, 'UTF-8') ?>"
+                           style="height: 200px; object-fit: cover;">
+                    <?php endif; ?>
+                    
+                    <div class="card-body">
+                      <span class="mg-pill-label">
+                        <?= date('d.m.Y', strtotime($eduArticle['created_at'])) ?>
+                      </span>
+                      
+                      <h3 class="mg-edu-title text-secondary">
+                        <a href="clanak.php?slug=<?= urlencode($eduArticle['slug']) ?>" class="text-decoration-none text-secondary">
+                          <?= htmlspecialchars($eduArticle['title'], ENT_QUOTES, 'UTF-8') ?>
+                        </a>
+                      </h3>
+                      
+                      <?php
+                        $summarySource = $eduArticle['excerpt'] ?: $eduArticle['content'] ?? '';
+                        $articleUrl = 'clanak.php?slug=' . urlencode($eduArticle['slug']);
+                      ?>
+                      <p class="card-text text-secondary small mb-0">
+                        <?= shorten_with_more_link($summarySource, 150, $articleUrl) ?>
+                      </p>
+                    </div>
+                  </article>
+                </div>
+              <?php endforeach; ?>
+            </div>
+            
+            <div class="text-center mt-4">
+              <a href="edukacije.php" class="btn mg-btn">Sve edukacije</a>
+            </div>
+          </div>
+        <?php endif; ?>
       </div>
     </section>
 
@@ -526,6 +584,7 @@ $latestArticles = $stmtMini->fetchAll();
         <div class="col-6 col-lg-2">
           <div class="mg-footer-heading">Edukacija</div>
           <div class="mg-footer-list">
+            <a href="edukacije.php">Sve edukacije</a>
             <a href="#edukacije">Škola sigurne vožnje</a>
             <a href="#edukacije">Edukacijski poligoni</a>
             <a href="#edukacije">Moto Gymkhana trening</a>
