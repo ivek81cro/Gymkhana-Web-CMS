@@ -42,9 +42,6 @@ $educationArticles = $stmtEdu->fetchAll();
 
   <!-- Custom stilovi -->
   <link rel="stylesheet" href="assets/css/style.css">
-
-  <!-- Custom JS -->
-   <script src="assets/js/news-home.js"></script>
 </head>
 
 <body>
@@ -257,7 +254,7 @@ $educationArticles = $stmtEdu->fetchAll();
         <!-- Prikaži članke iz kategorije Edukacija ako postoje -->
         <?php if (!empty($educationArticles)): ?>
           <div class="mt-5">
-            <h3 class="text-center mb-4 text-secondary">Najnovije edukacije</h3>
+            <h3 class="text-center mb-4 text-secondary">Više o edukacijama</h3>
             <div class="row gy-4">
               <?php foreach ($educationArticles as $eduArticle): ?>
                 <div class="col-md-4">

@@ -38,9 +38,13 @@ $galleries = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <!-- Tvoj glavni CSS -->
-    <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="stylesheet" href="../assets/css/style.css">
 </head>
 <body class="bg-dark text-light">
+    <header id="top">
+        <?php include __DIR__ . '/../includes/nav.php'; ?>
+    </header>
+
     <div class="container py-4">
         <div class="mb-4 d-flex justify-content-between align-items-center">
             <h1 class="h3 mb-0">Galerije</h1>

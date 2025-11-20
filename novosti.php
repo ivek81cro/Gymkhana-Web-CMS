@@ -2,11 +2,13 @@
 define('IN_APP', true);
 require __DIR__ . '/includes/config.php';
 
-$stmt = $pdo->query("
+$stmt = $pdo->prepare("
     SELECT id, slug, title, excerpt, image, category, created_at
     FROM articles
+    WHERE category = :category
     ORDER BY created_at DESC
 ");
+$stmt->execute([':category' => 'Novosti']);
 $articles = $stmt->fetchAll();
 ?>
 

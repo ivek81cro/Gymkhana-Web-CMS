@@ -323,8 +323,12 @@ $allArticles = $stmtList->fetchAll();
 
               <div class="col-md-4">
                 <label for="category" class="text-secondary">Kategorija</label>
-                <input type="text" name="category" id="category" class="form-control" placeholder="Novosti"
-                  value="<?= htmlspecialchars($categoryValue, ENT_QUOTES, 'UTF-8') ?>">
+                <select name="category" id="category" class="form-select">
+                  <option value="Novosti" <?= $categoryValue === 'Novosti' ? 'selected' : '' ?>>Novosti</option>
+                  <option value="Edukacija" <?= $categoryValue === 'Edukacija' ? 'selected' : '' ?>>Edukacija</option>
+                  <option value="Natjecanja" <?= $categoryValue === 'Natjecanja' ? 'selected' : '' ?>>Natjecanja</option>
+                  <option value="Ostalo" <?= $categoryValue === 'Ostalo' ? 'selected' : '' ?>>Ostalo</option>
+                </select>
               </div>
 
               <div class="col-md-8">
