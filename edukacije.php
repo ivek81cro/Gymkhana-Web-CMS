@@ -4,9 +4,9 @@ require __DIR__ . '/includes/config.php';
 
 // Dohvati sve članke iz kategorije "Edukacija"
 $stmt = $pdo->prepare("
-    SELECT id, slug, title, excerpt, content, image, created_at
+    SELECT slug, title, excerpt, content, image, created_at
     FROM articles
-    WHERE category = :category
+    WHERE category = :category AND status = 'published'
     ORDER BY created_at DESC
 ");
 $stmt->execute([':category' => 'Edukacija']);

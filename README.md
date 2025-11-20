@@ -22,11 +22,12 @@ Content Management System for Moto Gymkhana Croatia website. PHP-based CMS with 
 - 🎨 Custom Montserrat font styling
 
 ### Admin Panel
-- 🔐 Secure login
-- ✍️ WYSIWYG article management
-  - Create and edit articles
+- 🔐 Secure login with password hashing and CSRF protection
+- ✍️ WYSIWYG article management (TinyMCE)
+  - Create, edit, and delete articles
+  - Draft/Published status
   - Categories and tags
-  - Add images
+  - Image picker from galleries
   - Link galleries to articles
 - 🖼️ Gallery management
   - Upload multiple images at once
@@ -34,6 +35,14 @@ Content Management System for Moto Gymkhana Croatia website. PHP-based CMS with 
   - EXIF rotation correction
   - Thumbnail preview
   - Delete individual images
+
+### Security Features
+- 🔒 Password hashing (bcrypt)
+- 🛡️ CSRF token protection on all forms
+- 🚫 Rate limiting (5 login attempts per 15 min)
+- 🔑 Session regeneration after login
+- ✅ SQL injection protection (PDO prepared statements)
+- 🧹 XSS protection (HTML escaping)
 
 ## 🛠️ Technologies
 

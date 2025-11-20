@@ -6,7 +6,7 @@ require __DIR__ . '/includes/config.php';
 $stmtMini = $pdo->prepare("
     SELECT slug, title, excerpt, content, created_at
     FROM articles
-    WHERE category = :category
+    WHERE category = :category AND status = 'published'
     ORDER BY created_at DESC
     LIMIT 3
 ");
@@ -17,7 +17,7 @@ $latestArticles = $stmtMini->fetchAll();
 $stmtEdu = $pdo->prepare("
     SELECT slug, title, excerpt, content, image, created_at
     FROM articles
-    WHERE category = :category
+    WHERE category = :category AND status = 'published'
     ORDER BY created_at DESC
     LIMIT 3
 ");

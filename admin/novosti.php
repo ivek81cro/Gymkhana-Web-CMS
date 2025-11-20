@@ -5,6 +5,35 @@ require __DIR__ . '/../includes/config.php';
 // Samo za prijavljene admine
 require_admin();
 
+// Brisanje članka
+if (isset($_GET['delete'])) {
+    $deleteId = (int)$_GET['delete'];
+    
+    if ($deleteId > 0) {
+        try {
+            // Provjeri CSRF token
+            if (!isset($_GET['token']) || !verify_csrf_token($_GET['token'])) {
+                $errors[] = 'Nevažeći sigurnosni token.';
+            } else {
+                $stmt = $pdo->prepare("DELETE FROM articles WHERE id = :id");
+                $stmt->execute([':id' => $deleteId]);
+                $success = 'Članak je uspješno obrisan.';
+                
+                // Redirect da se ukloni delete parametar iz URL-a
+                header('Location: novosti.php?deleted=1');
+                exit;
+            }
+        } catch (PDOException $e) {
+            $errors[] = 'Greška pri brisanju: ' . $e->getMessage();
+        }
+    }
+}
+
+// Poruka nakon redirecta
+if (isset($_GET['deleted'])) {
+    $success = 'Članak je uspješno obrisan.';
+}
+
 // Dohvati sve galerije za dropdown
 $galleries = $pdo->query("
     SELECT id, name
@@ -13,7 +42,9 @@ $galleries = $pdo->query("
 ")->fetchAll(PDO::FETCH_ASSOC);
 
 $errors = [];
-$success = null;
+if (!isset($success)) {
+    $success = null;
+}
 
 // ID članka ako uređujemo (admin-novosti.php?id=123)
 $articleId = isset($_GET['id']) ? (int) $_GET['id'] : null;
@@ -36,6 +67,12 @@ if ($editing) {
 
 // Obrada forme (novo + edit)
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+  // CSRF provjera
+  $csrfToken = $_POST['csrf_token'] ?? '';
+  if (!verify_csrf_token($csrfToken)) {
+    $errors[] = 'Nevažeći sigurnosni token. Osvježite stranicu.';
+  }
+  
   $title = trim($_POST['title'] ?? '');
   $slug = trim($_POST['slug'] ?? '');
   $excerpt = trim($_POST['excerpt'] ?? '');
@@ -44,10 +81,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   $tags = trim($_POST['tags'] ?? '');
   $content = trim($_POST['content'] ?? '');
   $date = trim($_POST['date'] ?? '');
+  $status = trim($_POST['status'] ?? 'draft');
   $galleryId = !empty($_POST['gallery_id']) ? (int)$_POST['gallery_id'] : null;
 
   if ($title === '') {
     $errors[] = 'Naslov je obavezan.';
+  }
+  
+  // Validacija statusa
+  if (!in_array($status, ['draft', 'published'])) {
+    $status = 'draft';
+  }
+  
+  // Validacija statusa
+  if (!in_array($status, ['draft', 'published'])) {
+    $status = 'draft';
   }
 
   if ($content === '') {
@@ -88,6 +136,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         category = :category,
                         tags = :tags,
                         gallery_id = :gallery_id,
+                        status = :status,
                         created_at = :created_at
                     WHERE id = :id
                 ");
@@ -120,8 +169,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       } else {
         // INSERT novog članka
         $stmt = $pdo->prepare("
-                    INSERT INTO articles (slug, title, excerpt, content, image, category, tags, gallery_id, created_at)
-                    VALUES (:slug, :title, :excerpt, :content, :image, :category, :tags, :gallery_id, :created_at)
+                    INSERT INTO articles (slug, title, excerpt, content, image, category, tags, gallery_id, status, created_at)
+                    VALUES (:slug, :title, :excerpt, :content, :image, :category, :tags, :gallery_id, :status, :created_at)
                 ");
 
         $stmt->execute([
@@ -133,6 +182,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           ':category' => $category,
           ':tags' => $tags,
           ':gallery_id' => $galleryId,
+          ':status' => $status,
           ':created_at' => $createdAt,
         ]);
 
@@ -155,6 +205,7 @@ $categoryValue = $_POST['category'] ?? ($article['category'] ?? '');
 $tagsValue = $_POST['tags'] ?? ($article['tags'] ?? '');
 $contentValue = $_POST['content'] ?? ($article['content'] ?? '');
 $galleryValue = $_POST['gallery_id'] ?? ($article['gallery_id'] ?? '');
+$statusValue = $_POST['status'] ?? ($article['status'] ?? 'draft');
 $dateValue = $_POST['date']
   ?? (
     $article && !empty($article['created_at'])
@@ -164,7 +215,7 @@ $dateValue = $_POST['date']
 
 // Lista svih članaka za tablicu dolje
 $stmtList = $pdo->query("
-    SELECT id, slug, title, category, created_at
+    SELECT id, slug, title, category, status, created_at
     FROM articles
     ORDER BY created_at DESC
 ");
@@ -265,26 +316,45 @@ $allArticles = $stmtList->fetchAll();
                   <th style="width: 60px;">ID</th>
                   <th>Naslov</th>
                   <th>Kategorija</th>
+                  <th style="width: 100px;">Status</th>
                   <th>Datum</th>
                   <th>Slug</th>
-                  <th style="width: 140px;">Akcije</th>
+                  <th style="width: 180px;">Akcije</th>
                 </tr>
               </thead>
               <tbody>
                 <?php foreach ($allArticles as $row): ?>
-                  <tr>
+                  <tr class="<?= ($row['status'] ?? 'draft') === 'draft' ? 'opacity-75' : '' ?>">
                     <td><?= (int) $row['id'] ?></td>
-                    <td><?= htmlspecialchars($row['title'], ENT_QUOTES, 'UTF-8') ?></td>
+                    <td>
+                      <?= htmlspecialchars($row['title'], ENT_QUOTES, 'UTF-8') ?>
+                      <?php if (($row['status'] ?? 'draft') === 'draft'): ?>
+                        <span class="badge bg-warning text-dark ms-1">Nacrt</span>
+                      <?php endif; ?>
+                    </td>
                     <td><?= htmlspecialchars($row['category'] ?? '', ENT_QUOTES, 'UTF-8') ?></td>
+                    <td>
+                      <?php if (($row['status'] ?? 'draft') === 'published'): ?>
+                        <span class="badge bg-success">✅ Objavljeno</span>
+                      <?php else: ?>
+                        <span class="badge bg-secondary">📝 Nacrt</span>
+                      <?php endif; ?>
+                    </td>
                     <td><?= date('d.m.Y.', strtotime($row['created_at'])) ?></td>
                     <td class="small"><?= htmlspecialchars($row['slug'], ENT_QUOTES, 'UTF-8') ?></td>
                     <td class="d-flex gap-1">
-                      <a href="novosti.php?id=<?= (int) $row['id'] ?>" class="btn btn-sm btn-outline-light">
+                      <a href="novosti.php?id=<?= (int) $row['id'] ?>" class="btn btn-sm btn-outline-light" title="Uredi članak">
                         Uredi
                       </a>
                       <a href="../clanak.php?slug=<?= urlencode($row['slug']) ?>" target="_blank"
-                        class="btn btn-sm btn-outline-secondary">
+                        class="btn btn-sm btn-outline-secondary" title="Pogledaj na webu">
                         Pogledaj
+                      </a>
+                      <a href="novosti.php?delete=<?= (int) $row['id'] ?>&token=<?= urlencode(generate_csrf_token()) ?>" 
+                         class="btn btn-sm btn-outline-danger" 
+                         title="Obriši članak"
+                         onclick="return confirm('Jesi li siguran da želiš obrisati članak \'<?= htmlspecialchars($row['title'], ENT_QUOTES, 'UTF-8') ?>\'? Ova radnja se ne može poništiti.')">
+                        Obriši
                       </a>
                     </td>
                   </tr>
@@ -299,17 +369,29 @@ $allArticles = $stmtList->fetchAll();
       <div class="card mg-card">
         <div class="card-body">
           <form method="post">
+            <!-- CSRF Token -->
+            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(generate_csrf_token(), ENT_QUOTES, 'UTF-8') ?>">
+            
             <div class="row g-3">
-              <div class="col-md-8">
+              <div class="col-md-6">
                 <label for="title" class="text-secondary">Naslov</label>
                 <input type="text" name="title" id="title" class="form-control"
                   value="<?= htmlspecialchars($titleValue, ENT_QUOTES, 'UTF-8') ?>" required>
               </div>
 
-              <div class="col-md-4">
+              <div class="col-md-3">
                 <label for="date" class="text-secondary">Datum</label>
                 <input type="date" name="date" id="date" class="form-control"
                   value="<?= htmlspecialchars($dateValue, ENT_QUOTES, 'UTF-8') ?>">
+              </div>
+
+              <div class="col-md-3">
+                <label for="status" class="text-secondary">Status</label>
+                <select name="status" id="status" class="form-select">
+                  <option value="draft" <?= $statusValue === 'draft' ? 'selected' : '' ?>>📝 Nacrt</option>
+                  <option value="published" <?= $statusValue === 'published' ? 'selected' : '' ?>>✅ Objavljeno</option>
+                </select>
+                <div class="form-text">Samo objavljeni članci vidljivi su javnosti</div>
               </div>
 
               <div class="col-md-6">

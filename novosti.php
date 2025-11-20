@@ -5,7 +5,7 @@ require __DIR__ . '/includes/config.php';
 $stmt = $pdo->prepare("
     SELECT id, slug, title, excerpt, image, category, created_at
     FROM articles
-    WHERE category = :category
+    WHERE category = :category AND status = 'published'
     ORDER BY created_at DESC
 ");
 $stmt->execute([':category' => 'Novosti']);
