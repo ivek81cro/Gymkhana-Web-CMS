@@ -39,3 +39,10 @@ AddDefaultCharset UTF-8
     ExpiresByType application/javascript "access plus 1 month"
     ExpiresByType application/pdf "access plus 1 month"
 </IfModule>
+
+# Allow TinyMCE assets
+<FilesMatch "\.(js|css|woff|woff2|ttf|eot|svg)$">
+    <IfModule mod_headers.c>
+        Header set Access-Control-Allow-Origin "*"
+    </IfModule>
+</FilesMatch>

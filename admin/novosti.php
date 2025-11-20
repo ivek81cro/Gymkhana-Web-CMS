@@ -380,11 +380,14 @@ $allArticles = $stmtList->fetchAll();
 
               <div class="col-12">
                 <label for="content" class="text-secondary">Sadržaj članka</label>
-                <textarea name="content" id="content" rows="10" class="form-control"
-                  placeholder="Puni tekst članka, može sadržavati HTML tagove."><?= htmlspecialchars($contentValue, ENT_QUOTES, 'UTF-8') ?></textarea>
-                <div class="text-secondary">
-                  HTML tagovi (npr. &lt;p&gt;, &lt;h2&gt;, &lt;strong&gt;) koriste se za formatiranje.
-                  U prikazu se tagovi ne vide, samo formatirani tekst.
+                <textarea name="content" id="content" rows="15" class="form-control"
+                  placeholder="Napiši sadržaj članka... Koristi alate iznad za formatiranje."><?= htmlspecialchars($contentValue, ENT_QUOTES, 'UTF-8') ?></textarea>
+                <div class="text-secondary mt-2">
+                  <small>
+                    <i class="bi bi-info-circle"></i> 
+                    Koristi toolbar iznad za formatiranje teksta (bold, italic, naslovi, liste, linkovi, slike...). 
+                    HTML kod se automatski generira.
+                  </small>
                 </div>
               </div>
 
@@ -557,8 +560,34 @@ $allArticles = $stmtList->fetchAll();
   <!-- Bootstrap JS bundle -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-  <!-- Tvoj JS za generator -->
-  <script src="assets/js/admin-novosti.js"></script>
+  <!-- TinyMCE Editor (CDN - privremeno dok se ne uploada lokalno) -->
+  <script src="../assets/js/tinymce/tinymce.min.js"></script>
+  <script>
+    tinymce.init({
+      selector: '#content',
+      height: 500,
+      menubar: false,
+      license_key: 'gpl',
+      plugins: [
+        'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
+        'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
+        'insertdatetime', 'media', 'table', 'help', 'wordcount'
+      ],
+      toolbar: 'undo redo | blocks | bold italic underline strikethrough | forecolor backcolor | ' +
+        'alignleft aligncenter alignright alignjustify | ' +
+        'bullist numlist outdent indent | link image media | ' +
+        'removeformat code fullscreen help',
+      content_style: 'body { font-family: Montserrat, Arial, sans-serif; font-size: 16px; line-height: 1.6; }',
+      block_formats: 'Paragraf=p; Naslov 2=h2; Naslov 3=h3; Naslov 4=h4; Citat=blockquote',
+      image_advtab: true,
+      image_caption: true,
+      relative_urls: false,
+      remove_script_host: false,
+      convert_urls: true,
+      branding: false,
+      promotion: false
+    });
+  </script>
 </body>
 
 </html>
