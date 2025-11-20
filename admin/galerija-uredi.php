@@ -6,13 +6,26 @@ require __DIR__ . '/../includes/config.php';
 require_admin();
 
 /**
- * Resize slike uz održavanje omjera
- * @param string $source Putanja do originalne slike
- * @param string $destination Putanja gdje spremiti resizanu sliku
- * @param int $maxWidth Maksimalna širina
- * @param int $maxHeight Maksimalna visina
- * @param int $quality Kvaliteta (1-100)
- * @return bool Success
+ * Resize and optimize uploaded images while maintaining aspect ratio
+ * 
+ * This function:
+ * 1. Reads image from source path
+ * 2. Calculates new dimensions (proportional scaling)
+ * 3. Creates resized image in memory
+ * 4. Saves optimized image to destination
+ * 5. Handles JPEG, PNG, GIF, and WebP formats
+ * 
+ * @param string $source Path to original image file
+ * @param string $destination Path where resized image will be saved
+ * @param int $maxWidth Maximum width in pixels (default: 1920)
+ * @param int $maxHeight Maximum height in pixels (default: 1080)
+ * @param int $quality JPEG/WebP quality 1-100 (default: 85). For PNG: converted to 0-9 scale
+ * @return bool True on success, false on failure
+ * 
+ * @example
+ * resizeImage('/tmp/upload.jpg', 'uploads/gallery/photo.jpg', 1920, 1080, 85);
+ * 
+ * @uses GD Library functions (imagecreatefromjpeg, imagecopyresampled, etc.)
  */
 function resizeImage($source, $destination, $maxWidth = 1920, $maxHeight = 1080, $quality = 85) {
     $imageInfo = @getimagesize($source);
@@ -22,7 +35,7 @@ function resizeImage($source, $destination, $maxWidth = 1920, $maxHeight = 1080,
 
     list($origWidth, $origHeight, $imageType) = $imageInfo;
 
-    // Učitaj originalnu sliku ovisno o tipu
+    // Load original image based on type (JPEG, PNG, GIF, WebP)
     switch ($imageType) {
         case IMAGETYPE_JPEG:
             $image = @imagecreatefromjpeg($source);
@@ -44,24 +57,25 @@ function resizeImage($source, $destination, $maxWidth = 1920, $maxHeight = 1080,
         return false;
     }
 
-    // Ispravi orijentaciju na osnovu EXIF podataka (za fotografije s mobitela)
+    // Fix orientation based on EXIF data (for photos from mobile devices)
+    // Mobile cameras often save rotated images with EXIF orientation flag
     if ($imageType == IMAGETYPE_JPEG && function_exists('exif_read_data')) {
         $exif = @exif_read_data($source);
         if ($exif && !empty($exif['Orientation'])) {
             switch ($exif['Orientation']) {
-                case 3:
+                case 3: // Upside down
                     $image = imagerotate($image, 180, 0);
                     break;
-                case 6:
+                case 6: // Rotated 90 degrees clockwise
                     $image = imagerotate($image, -90, 0);
-                    // Zamijeni širinu i visinu nakon rotacije
+                    // Swap width and height after rotation
                     $temp = $origWidth;
                     $origWidth = $origHeight;
                     $origHeight = $temp;
                     break;
-                case 8:
+                case 8: // Rotated 90 degrees counter-clockwise
                     $image = imagerotate($image, 90, 0);
-                    // Zamijeni širinu i visinu nakon rotacije
+                    // Swap width and height after rotation
                     $temp = $origWidth;
                     $origWidth = $origHeight;
                     $origHeight = $temp;
@@ -70,10 +84,11 @@ function resizeImage($source, $destination, $maxWidth = 1920, $maxHeight = 1080,
         }
     }
 
-    // Izračunaj nove dimenzije uz održavanje omjera
+    // Calculate new dimensions while maintaining aspect ratio
+    // Formula: new_dimension = original_dimension * min(maxWidth/origWidth, maxHeight/origHeight)
     $ratio = min($maxWidth / $origWidth, $maxHeight / $origHeight);
     
-    // Ako je slika manja od max dimenzija, ne mijenjaj je
+    // If image is smaller than max dimensions, don't upscale (keep original size)
     if ($ratio >= 1) {
         $newWidth = $origWidth;
         $newHeight = $origHeight;
@@ -82,7 +97,7 @@ function resizeImage($source, $destination, $maxWidth = 1920, $maxHeight = 1080,
         $newHeight = (int)($origHeight * $ratio);
     }
 
-    // Kreiraj novu sliku
+    // Create new true-color image resource
     $newImage = imagecreatetruecolor($newWidth, $newHeight);
 
     // Očuvaj transparentnost za PNG i GIF
@@ -93,20 +108,23 @@ function resizeImage($source, $destination, $maxWidth = 1920, $maxHeight = 1080,
         imagefilledrectangle($newImage, 0, 0, $newWidth, $newHeight, $transparent);
     }
 
-    // Kopiraj i resiziraj
+    // Resample and copy original image to new dimensions
+    // imagecopyresampled provides better quality than imagecopyresized
     imagecopyresampled($newImage, $image, 0, 0, 0, 0, $newWidth, $newHeight, $origWidth, $origHeight);
 
-    // Spremi sliku
+    // Save resized image to destination path
     $result = false;
     $ext = strtolower(pathinfo($destination, PATHINFO_EXTENSION));
     
     switch ($ext) {
         case 'jpg':
         case 'jpeg':
+            // Quality: 1-100 (higher = better quality, larger file)
             $result = imagejpeg($newImage, $destination, $quality);
             break;
         case 'png':
-            // PNG quality je 0-9 (0 = bez kompresije, 9 = max kompresija)
+            // PNG quality is 0-9 (0 = no compression, 9 = max compression)
+            // Convert from 1-100 scale to 0-9 scale
             $pngQuality = (int)(9 - ($quality / 100) * 9);
             $result = imagepng($newImage, $destination, $pngQuality);
             break;
@@ -114,11 +132,12 @@ function resizeImage($source, $destination, $maxWidth = 1920, $maxHeight = 1080,
             $result = imagegif($newImage, $destination);
             break;
         case 'webp':
+            // Quality: 1-100 (same as JPEG)
             $result = imagewebp($newImage, $destination, $quality);
             break;
     }
 
-    // Oslobodi memoriju
+    // Free memory (important for processing multiple images)
     imagedestroy($image);
     imagedestroy($newImage);
 

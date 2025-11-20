@@ -124,11 +124,13 @@ CREATE TABLE articles (
     content TEXT NOT NULL,
     image VARCHAR(255),
     category VARCHAR(100),
+    status ENUM('draft', 'published') NOT NULL DEFAULT 'published',
     tags VARCHAR(255),
     gallery_id INT NULL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     INDEX idx_slug (slug),
     INDEX idx_created (created_at),
+    INDEX idx_status_category (status, category),
     FOREIGN KEY (gallery_id) REFERENCES galleries(id) ON DELETE SET NULL
 );
 
@@ -156,29 +158,49 @@ CREATE TABLE gallery_images (
 );
 ```
 
-4. **Copy and configure config file**
+4. **Configure database connection**
+
+Copy the sample config and edit with your credentials:
 ```bash
 cp includes/config.sample.php includes/config.php
 ```
 
-5. **Edit `includes/config.php`**
+Edit `includes/config.php`:
 ```php
 $dbHost = 'localhost';
 $dbName = 'gymkhana_db';
 $dbUser = 'your_username';
 $dbPass = 'your_password';
-
-define('ADMIN_USERNAME', 'admin');
-define('ADMIN_PASSWORD', 'your_secure_password');
 ```
 
-6. **Set permissions**
+5. **Set admin credentials**
+
+Generate password hash:
+```bash
+php includes/generate-password.php
+```
+
+Copy the generated hash to `includes/config.php`:
+```php
+const ADMIN_USERNAME = 'admin';
+const ADMIN_PASSWORD_HASH = '$2y$10$...'; // Paste generated hash here
+```
+
+6. **Run database migrations**
+
+Apply the status column migration:
+```bash
+mysql -u your_username -p your_database < dev/migration-add-status-column.sql
+```
+
+7. **Set permissions**
 ```bash
 chmod 755 uploads/
 chmod 755 uploads/gallery/
+chmod 644 includes/config.php
 ```
 
-7. **Start web server**
+8. **Start web server**
 ```bash
 # PHP built-in server for development
 php -S localhost:8000
@@ -186,9 +208,35 @@ php -S localhost:8000
 # Or configure Apache/Nginx virtual host
 ```
 
-8. **Access the site**
+9. **Access the site**
 - Public site: `http://localhost:8000/`
 - Admin panel: `http://localhost:8000/admin/`
+- Default credentials: See `includes/config.php`
+
+### Quick Setup (Development)
+```bash
+# 1. Clone and setup
+git clone https://github.com/ivek81cro/Gymkhana-Web-CMS.git
+cd Gymkhana-Web-CMS
+
+# 2. Create database
+mysql -u root -p -e "CREATE DATABASE gymkhana_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+
+# 3. Import schema (see SQL in step 3 above)
+
+# 4. Copy and configure
+cp includes/config.sample.php includes/config.php
+# Edit includes/config.php with your database credentials
+
+# 5. Generate password hash
+php includes/generate-password.php
+
+# 6. Apply migrations
+mysql -u root -p gymkhana_db < dev/migration-add-status-column.sql
+
+# 7. Start server
+php -S localhost:8000
+```
 
 ## ⚙️ Configuration
 
@@ -256,11 +304,26 @@ $resized = resizeImage($tmpName, $fullPath, 1920, 1080, 85);
 - ✅ File upload validation (type, extension)
 - ⚠️ **IMPORTANT:** Change admin credentials in production!
 
+## 📚 Documentation
+
+### Code Documentation
+- **Full code reference:** See `docs/code-documentation.md`
+- **AJAX API:** See `docs/API-ajax-get-gallery-images.md`
+- **Migrations:** See `dev/migration-instructions.md`
+- **Config template:** See `includes/config.sample.php`
+
+### Key Files
+- `includes/config.php` - Database connection and helper functions
+- `admin/novosti.php` - Article CRUD with TinyMCE editor
+- `admin/galerija-uredi.php` - Image upload and gallery management
+- `admin/ajax-get-gallery-images.php` - AJAX endpoint for image picker
+
 ## 🐛 Development
 
 ### Debug mode
-For debugging, enable error display in `admin/galerija-uredi.php`:
+Enable error display (development only):
 ```php
+// In any PHP file
 error_reporting(E_ALL);
 ini_set('display_errors', '1');
 ```
@@ -268,6 +331,11 @@ ini_set('display_errors', '1');
 ### Database testing
 ```bash
 php dev/test-db.php
+```
+
+### Generate password hash
+```bash
+php includes/generate-password.php
 ```
 
 ## 📝 License
