@@ -51,6 +51,8 @@ a:hover {
   backdrop-filter: blur(16px);
   border-bottom: 1px solid rgba(148, 163, 184, 0.25);
   max-width: 100%;
+  position: relative;
+  z-index: 1040;
 }
 
 .mg-navbar-brand {
@@ -128,6 +130,51 @@ a:hover {
 
 .mg-nav-links .nav-link:hover::after {
   width: 100%;
+}
+
+/* Dropdown styles */
+.navbar-nav .dropdown-menu {
+  background: rgba(15, 23, 42, 0.96);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  border-radius: 0.5rem;
+  margin-top: 0;
+  min-width: 200px;
+  z-index: 9999 !important;
+  pointer-events: auto !important;
+  position: absolute !important;
+}
+
+.navbar-nav .dropdown-item {
+  color: var(--color-muted);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  padding: 0.6rem 1.2rem;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.navbar-nav .dropdown-item:hover,
+.navbar-nav .dropdown-item:focus {
+  background: rgba(255, 30, 0, 0.1);
+  color: var(--color-text);
+}
+
+.navbar-nav .dropdown-item.active {
+  background: rgba(255, 30, 0, 0.15);
+  color: #ff6a00;
+}
+
+.navbar-nav .dropdown-divider {
+  border-color: rgba(148, 163, 184, 0.2);
+  margin: 0.5rem 0;
+}
+
+.navbar-nav .dropdown-toggle::after {
+  margin-left: 0.4em;
+  vertical-align: 0.15em;
 }
 
 .mg-nav-phone {

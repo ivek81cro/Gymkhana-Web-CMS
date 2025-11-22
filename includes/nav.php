@@ -62,15 +62,18 @@ $baseUrl = ($inAdmin || $inMicro) ? '../' : '';
                 </a>
             </li>
             <?php endif; ?>
-            <li class="nav-item">
-                <a class="nav-link <?= $current === 'index.php#natjecanja' ? 'active' : '' ?>"
-                     href="<?= $baseUrl ?>index.php#natjecanja">Natjecanja
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle <?= ($current === 'index.php#natjecanja' || $inMicro) ? 'active' : '' ?>" 
+                   href="javascript:void(0)" 
+                   id="natjecanjaDropdown" 
+                   role="button" 
+                   data-bs-toggle="dropdown" 
+                   aria-expanded="false">
+                    Natjecanja
                 </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link <?= $inMicro ? 'active' : '' ?>"
-                     href="<?= $baseUrl ?>micro/index.php">Rezultati
-                </a>
+                <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="natjecanjaDropdown">
+                    <li><a class="dropdown-item <?= $inMicro ? 'active' : '' ?>" href="<?= $baseUrl ?>micro/index.php">Rezultati</a></li>
+                </ul>
             </li>
             <li class="nav-item">
                 <a class="nav-link <?= $current === 'index.php#suradnja' ? 'active' : '' ?>"

@@ -580,6 +580,8 @@ $educationArticles = $stmtEdu->fetchAll();
 
   <!-- Bootstrap JS bundle -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  
+
 
   <a href="#top" class="btn btn-primary mg-back-to-top" aria-label="Povratak na vrh">
     ↑

@@ -59,15 +59,15 @@ $articles = $stmt->fetchAll();
         
           <div class="d-flex flex-column flex-sm-row align-items-sm-center gap-3 ms-auto">
             <p class="mg-section-subtitle mb-0">
-              Pregled svih vijesti iz Moto Gymkhana Croatia â€“ edukacije, natjecanja i najave dogaÄ‘aja.
+              Pregled svih vijesti iz Moto Gymkhana Croatia, edukacije, natjecanja i najave događaja.
             </p>
         
             <?php if (is_admin()): ?>
-              <a href="admin/novosti.php" class="btn mg-btn">
+              <a href="admin/novosti.php" class="mg-footer-badge">
                 Admin zona
               </a>
             <?php else: ?>
-              <a href="admin/login.php" class="btn mg-btn-outline">
+              <a href="admin/login.php" class="mg-footer-badge">
                 Admin prijava
               </a>
             <?php endif; ?>
