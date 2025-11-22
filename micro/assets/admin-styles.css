@@ -1,0 +1,312 @@
+/* Micro Admin Panel Styles */
+
+/* Admin Header */
+.admin-header {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 2rem 0;
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+    border-radius: 10px;
+}
+
+.admin-header h1 {
+    color: #ffc107;
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.admin-controls {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+/* Buttons */
+.btn-admin {
+    background: #ffc107;
+    color: #000;
+    border: none;
+    padding: 0.5rem 1.5rem;
+    border-radius: 5px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.btn-admin:hover {
+    background: #ffca2c;
+    color: #000;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(255, 193, 7, 0.4);
+}
+
+.btn-admin.danger {
+    background: #dc3545;
+    color: #fff;
+}
+
+.btn-admin.danger:hover {
+    background: #c82333;
+    color: #fff;
+}
+
+.btn-secondary-custom {
+    background: rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(255, 193, 7, 0.3);
+}
+
+.btn-secondary-custom:hover {
+    background: rgba(255, 255, 255, 0.15);
+    color: #fff;
+    border-color: #ffc107;
+}
+
+/* Alerts */
+.alert-success {
+    background: rgba(40, 167, 69, 0.2);
+    border: 1px solid #28a745;
+    color: #5cd67c;
+    padding: 1rem;
+    border-radius: 5px;
+    margin-bottom: 1.5rem;
+}
+
+.alert-danger {
+    background: rgba(220, 53, 69, 0.2);
+    border: 1px solid #dc3545;
+    color: #ff6b6b;
+    padding: 1rem;
+    border-radius: 5px;
+    margin-bottom: 1.5rem;
+}
+
+/* Card */
+.card-admin {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+}
+
+.card-admin h2 {
+    color: #ffc107;
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+}
+
+/* Table */
+.table-admin {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.table-admin table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table-admin thead {
+    background: rgba(255, 193, 7, 0.1);
+}
+
+.table-admin th {
+    padding: 1rem;
+    text-align: left;
+    color: #ffc107;
+    font-weight: 600;
+    border-bottom: 2px solid rgba(255, 193, 7, 0.3);
+}
+
+.table-admin td {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.table-admin tbody tr:hover {
+    background: rgba(255, 193, 7, 0.05);
+}
+
+.dnf {
+    color: #dc3545;
+    font-weight: 600;
+}
+
+.btn-small {
+    padding: 0.25rem 0.75rem;
+    font-size: 0.875rem;
+    border-radius: 4px;
+    text-decoration: none;
+    display: inline-block;
+    margin-right: 0.5rem;
+    background: #ffc107;
+    color: #000;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.btn-small:hover {
+    background: #ffca2c;
+    color: #000;
+}
+
+.btn-small.danger {
+    background: #dc3545;
+    color: #fff;
+}
+
+.btn-small.danger:hover {
+    background: #c82333;
+}
+
+.nowrap {
+    white-space: nowrap;
+}
+
+/* Modal Styles */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal.open {
+    display: flex;
+}
+
+.modal-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+}
+
+.modal-card {
+    position: relative;
+    background: #1a1a1a;
+    border-radius: 10px;
+    max-width: 800px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+    z-index: 10000;
+}
+
+.modal-header {
+    background: rgba(255, 193, 7, 0.1);
+    padding: 1.5rem;
+    border-bottom: 2px solid rgba(255, 193, 7, 0.3);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-header h3 {
+    color: #ffc107;
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0;
+}
+
+.modal-close {
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 2rem;
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
+    transition: color 0.3s;
+}
+
+.modal-close:hover {
+    color: #ffc107;
+}
+
+.modal-body {
+    padding: 2rem;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+}
+
+.field-group {
+    display: flex;
+    align-items: flex-end;
+    gap: 1rem;
+}
+
+.field-group > label:first-child {
+    flex: 1;
+}
+
+.dnf-flag {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: rgba(255, 255, 255, 0.8);
+    margin-bottom: 0;
+    padding-bottom: 0.5rem;
+}
+
+.dnf-flag input[type="checkbox"] {
+    width: auto;
+    margin: 0;
+}
+
+.modal-body label {
+    display: block;
+    color: rgba(255, 255, 255, 0.8);
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+
+.modal-body input[type="text"] {
+    width: 100%;
+    padding: 0.75rem;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 193, 7, 0.3);
+    border-radius: 5px;
+    color: #fff;
+    font-size: 1rem;
+}
+
+.modal-body input[type="text"]:focus {
+    outline: none;
+    border-color: #ffc107;
+    box-shadow: 0 0 0 0.2rem rgba(255, 193, 7, 0.25);
+}
+
+.modal-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.modal-actions button {
+    flex: 1;
+    padding: 0.75rem;
+    border-radius: 5px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+}

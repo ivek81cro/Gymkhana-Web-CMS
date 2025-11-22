@@ -1,0 +1,9 @@
+
+/* DNF visuals */
+.dnf { display:inline-block; font-weight: 800; letter-spacing: .04em; color: var(--mgc-red, #E10600); }
+.field-group { display: grid; grid-template-columns: 1fr auto; align-items: end; gap: 8px; }
+.field-group .dnf-flag { display: inline-flex; align-items: center; gap: 6px; font-weight: 600; }
+.field-group .dnf-flag input[type="checkbox"] { transform: translateY(1px); }
+@media (max-width: 600px){
+  .field-group { grid-template-columns: 1fr auto; }
+}

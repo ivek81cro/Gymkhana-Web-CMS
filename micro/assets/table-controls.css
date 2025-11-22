@@ -1,0 +1,11 @@
+
+/* Sorting control above table */
+.controls-top {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin: 8px 0 12px;
+}
+.controls-top label {
+  font-weight: 600;
+}

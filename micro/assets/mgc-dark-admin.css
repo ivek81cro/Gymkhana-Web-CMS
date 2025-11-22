@@ -1,0 +1,6 @@
+
+/* Admin dark additions: ensure login page (body.auth) is black and auth-card is dark */
+body.auth { background: #000 !important; }
+.auth-card { background: #0f1115 !important; color: #f3f4f6 !important; border: 1px solid #23262d; box-shadow: 0 12px 24px rgba(0,0,0,0.45) !important; }
+.auth-card .note, .auth-card p, .auth-card label { color: #e5e7eb !important; }
+.auth-card a { color: #f3f4f6 !important; text-decoration: underline; }

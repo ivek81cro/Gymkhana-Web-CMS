@@ -1,9 +1,10 @@
 <?php
 // trenutna skripta (index.php, novosti.php, clanak.php, admin/novosti.php...)
 $current = basename($_SERVER['SCRIPT_NAME']);
-// Detektiraj jesi li u admin folderu
+// Detektiraj jesi li u admin ili micro folderu
 $inAdmin = strpos($_SERVER['SCRIPT_NAME'], '/admin/') !== false || strpos($_SERVER['SCRIPT_NAME'], '\\admin\\') !== false;
-$baseUrl = $inAdmin ? '../' : '';
+$inMicro = strpos($_SERVER['SCRIPT_NAME'], '/micro/') !== false || strpos($_SERVER['SCRIPT_NAME'], '\\micro\\') !== false;
+$baseUrl = ($inAdmin || $inMicro) ? '../' : '';
 ?>
 
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark mg-navbar">
@@ -64,6 +65,11 @@ $baseUrl = $inAdmin ? '../' : '';
             <li class="nav-item">
                 <a class="nav-link <?= $current === 'index.php#natjecanja' ? 'active' : '' ?>"
                      href="<?= $baseUrl ?>index.php#natjecanja">Natjecanja
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link <?= $inMicro ? 'active' : '' ?>"
+                     href="<?= $baseUrl ?>micro/index.php">Rezultati
                 </a>
             </li>
             <li class="nav-item">

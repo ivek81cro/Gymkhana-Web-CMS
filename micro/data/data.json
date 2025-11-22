@@ -1,0 +1,44 @@
+[
+    {
+        "id": 1,
+        "startni_broj": "7",
+        "ime": "Marko",
+        "prezime": "Horvat",
+        "gp8_1_ms": 135378,
+        "gp8_2_ms": 130512,
+        "track1_ms": 105200,
+        "track2_ms": 107999,
+        "gp8_1_dnf": false,
+        "gp8_2_dnf": false,
+        "track1_dnf": false,
+        "track2_dnf": false
+    },
+    {
+        "id": 2,
+        "startni_broj": "12",
+        "ime": "Ana",
+        "prezime": "Kovač",
+        "gp8_1_ms": 142567,
+        "gp8_2_ms": 138234,
+        "track1_ms": 112890,
+        "track2_ms": 115123,
+        "gp8_1_dnf": false,
+        "gp8_2_dnf": false,
+        "track1_dnf": false,
+        "track2_dnf": false
+    },
+    {
+        "id": 3,
+        "startni_broj": "5",
+        "ime": "Petar",
+        "prezime": "Novak",
+        "gp8_1_ms": 0,
+        "gp8_2_ms": 145678,
+        "track1_ms": 0,
+        "track2_ms": 120456,
+        "gp8_1_dnf": true,
+        "gp8_2_dnf": false,
+        "track1_dnf": true,
+        "track2_dnf": false
+    }
+]

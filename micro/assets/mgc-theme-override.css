@@ -1,0 +1,5 @@
+/* Override: remove rank colors on the first column (public + admin) */
+.table-wrap table td:first-child { color: inherit !important; }
+.table-wrap table tr:nth-child(1) td:first-child,
+.table-wrap table tr:nth-child(2) td:first-child,
+.table-wrap table tr:nth-child(3) td:first-child { color: inherit !important; }

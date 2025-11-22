@@ -236,6 +236,56 @@ All output is HTML-escaped:
 
 ---
 
+## Micro Leaderboard Module
+
+### `micro/index.php`
+Public leaderboard display:
+- Integrated with main CMS navigation and design
+- Real-time timing results for 4 tracks (GP8-1, GP8-2, Track 1, Track 2)
+- Sortable by track
+- DNF (Did Not Finish) support
+- Time format: MM:ss:mmm
+- Admin link visible only to authenticated admins
+- SEO optimized with meta tags
+
+### `micro/admin.php`
+Admin panel for leaderboard management:
+- Dual authentication (standalone + main CMS)
+- CRUD operations for competitor data
+- Modal-based editing interface
+- Time input with automatic formatting
+- DNF checkbox per track
+- CSRF protection
+- Rate limiting (5 attempts = 30s lock)
+- Activity logging via main CMS logger
+
+**Authentication:**
+- Standalone: `ADMIN_USER` / `ADMIN_PASS_HASH` in `micro/config.php`
+- Main CMS: Automatic access if logged in as admin (`is_admin()`)
+
+### `micro/lib.php`
+Helper functions:
+- `read_data(): array` - Read JSON timing data
+- `write_data(array $arr): bool` - Atomic file writes with flock()
+- `parse_time_ms(string $str): int|false` - Parse MM:ss:mmm to milliseconds
+- `format_time_colon(int $ms): string` - Format milliseconds to MM:ss:mmm
+- `sanitize_text(string $str): string` - XSS protection
+- `csrf_token(): string` - CSRF token generation
+- `csrf_check(string $token): bool` - CSRF validation
+- `is_logged_in(): bool` - Micro login check
+- `ensure_session(): void` - Secure session initialization
+
+### `micro/config.php`
+Simplified configuration:
+- `DATA_DIR` - Directory for JSON data storage
+- `DATA_FILE` - Path to JSON data file (`data/data.json`)
+
+**Note:** Authentication is now handled by main CMS (`includes/config.php`)
+
+**See:** `docs/MICRO-LEADERBOARD.md` for full documentation
+
+---
+
 ## File Structure
 
 ```
@@ -247,14 +297,32 @@ Gymkhana-Web-CMS/
 │   ├── novosti.php                     # Article CRUD
 │   ├── galerije.php                    # Gallery list
 │   ├── galerija-uredi.php              # Gallery upload
-│   └── ajax-get-gallery-images.php     # AJAX image picker
+│   ├── ajax-get-gallery-images.php     # AJAX image picker
+│   └── logs.php                        # Activity/security logs viewer
 │
 ├── includes/                           # Shared code
 │   ├── config.php                      # Database & auth (gitignored)
 │   ├── config.sample.php               # Config template
 │   ├── nav.php                         # Navigation component
 │   ├── footer.php                      # Footer component
+│   ├── seo-meta.php                    # SEO meta tags helper
+│   ├── error-handler.php               # Error/exception handling
+│   ├── logger.php                      # Activity/security logging
 │   └── generate-password.php           # Password hash generator
+│
+├── micro/                              # Leaderboard module
+│   ├── index.php                       # Public leaderboard (integrated)
+│   ├── admin.php                       # Admin panel (integrated)
+│   ├── lib.php                         # Helper functions
+│   ├── config.php                      # Micro config (gitignored)
+│   ├── assets/                         # Static resources
+│   └── data/
+│       ├── data.json                   # JSON database (gitignored)
+│       └── .htaccess                   # Directory protection
+│
+├── errors/                             # Error pages
+│   ├── 404.php                         # Not Found page
+│   └── 500.php                         # Server Error page
 │
 ├── assets/                             # Static resources
 │   ├── css/style.css                   # Custom styles
@@ -264,6 +332,11 @@ Gymkhana-Web-CMS/
 ├── uploads/                            # User uploads (gitignored)
 │   └── gallery/                        # Gallery images
 │
+├── logs/                               # Log files (gitignored)
+│   ├── activity.log                    # Admin activity log
+│   ├── security.log                    # Security events log
+│   └── error.log                       # PHP errors log
+│
 ├── dev/                                # Development tools
 │   ├── migration-add-status-column.sql # Status field migration
 │   ├── migration-instructions.md       # Migration guide
@@ -271,7 +344,9 @@ Gymkhana-Web-CMS/
 │
 ├── docs/                               # Documentation
 │   ├── API-ajax-get-gallery-images.md  # AJAX endpoint docs
-│   └── code-documentation.md           # This file
+│   ├── code-documentation.md           # This file
+│   ├── MICRO-LEADERBOARD.md            # Micro module docs
+│   └── UPUTE-CONFIG-UPDATE.md          # Config update instructions
 │
 ├── index.php                           # Homepage
 ├── novosti.php                         # News list
@@ -279,6 +354,10 @@ Gymkhana-Web-CMS/
 ├── clanak.php                          # Article display
 ├── galerije.php                        # Gallery list
 ├── galerija.php                        # Gallery display
+├── privacy-policy.php                  # GDPR privacy policy
+├── sitemap.xml.php                     # Dynamic XML sitemap
+├── robots.txt                          # Search engine rules
+├── .htaccess                           # Apache config (SEO, security)
 ├── .gitignore                          # Git ignore rules
 └── README.md                           # Installation guide
 ```

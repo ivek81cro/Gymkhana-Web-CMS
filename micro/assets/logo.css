@@ -1,0 +1,8 @@
+
+/* Header logo placement */
+.header-bar{ display:flex; align-items:flex-start; justify-content:space-between; gap:16px; }
+.header-brand{ display:flex; align-items:flex-start; gap:14px; }
+.header-brand .site-logo{ display:block; height:56px; width:auto; }
+@media (max-width: 640px){
+  .header-brand .site-logo{ height:42px; }
+}

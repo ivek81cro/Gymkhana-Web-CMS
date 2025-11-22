@@ -1,0 +1,59 @@
+
+/* MGC Dark Theme Override (black background)
+   Place after assets/mgc-theme.css and assets/logo.css
+*/
+:root{
+  --mgc-bg: #000000;         /* page background */
+  --mgc-card: #0f1115;       /* card/table/modal bg */
+  --mgc-border: #23262d;     /* subtle borders */
+  --mgc-dark: #f3f4f6;       /* base text on dark */
+  --mgc-mid: #e5e7eb;        /* headings text on dark */
+  --mgc-muted: #9ca3af;      /* secondary text */
+  --shadow: 0 12px 24px rgba(0,0,0,0.45);
+}
+
+/* Base */
+html, body { background: var(--mgc-bg); color: var(--mgc-dark); }
+h1, h2, h3 { color: var(--mgc-mid); }
+.small { color: var(--mgc-muted); }
+
+/* Containers & cards */
+.card, .table-wrap { background: var(--mgc-card); border: 1px solid var(--mgc-border); box-shadow: var(--shadow); }
+header .controls label { color: var(--mgc-muted); }
+
+/* Table */
+th { background: #12151b !important; color: var(--mgc-mid) !important; }
+td, th { border-bottom: 1px solid var(--mgc-border) !important; }
+tr:hover { background: rgba(255,255,255,0.03) !important; }
+
+/* Inputs */
+input[type="text"], input[type="password"], select {
+  background: #0d0f14 !important;
+  color: var(--mgc-dark) !important;
+  border: 1px solid var(--mgc-border) !important;
+}
+input::placeholder { color: #6b7280; }
+select:focus, input:focus { outline: 2px solid rgba(225,6,0,.35) !important; border-color: #b91c1c !important; }
+
+/* Buttons & links */
+button, .admin-link, .btn-small { color: #fff !important; }
+.btn-secondary { background: #1f2430 !important; color: #fff !important; }
+.btn-small.danger, .admin-link.danger { background: #b91c1c !important; }
+
+/* Modal */
+.modal-overlay { background: rgba(0,0,0,0.6) !important; }
+.modal-card { background: var(--mgc-card) !important; box-shadow: var(--shadow) !important; }
+.modal-header { border-color: var(--mgc-border) !important; }
+.modal-close { color: var(--mgc-mid) !important; }
+
+/* Header logo sizing keeps as-is; make title readable */
+.header-brand h1 { color: var(--mgc-mid); }
+
+/* Footer link stay visible */
+footer a { color: var(--mgc-dark); text-decoration: underline; }
+
+/* Remove first-column rank colors if present (so "Startni broj" stays neutral) */
+.table-wrap table td:first-child { color: inherit !important; }
+.table-wrap table tr:nth-child(1) td:first-child,
+.table-wrap table tr:nth-child(2) td:first-child,
+.table-wrap table tr:nth-child(3) td:first-child { color: inherit !important; }

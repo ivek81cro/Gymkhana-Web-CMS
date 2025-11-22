@@ -42,6 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $_SESSION['is_admin'] = true;
                 $_SESSION['admin_verified'] = true;
                 $_SESSION['admin_username'] = $username;
+                $_SESSION['user_id'] = 1; // Set user_id for is_admin() check
                 $_SESSION['login_attempts'] = []; // Reset pokušaja
                 
                 // Regeneriraj CSRF token
@@ -50,7 +51,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 // Log successful login
                 log_activity('login', "User: {$username}", 'success');
                 
-                header('Location: novosti.php');
+                // Check if there's a redirect URL (e.g., from micro admin)
+                $redirect = $_SESSION['redirect_after_login'] ?? 'novosti.php';
+                unset($_SESSION['redirect_after_login']);
+                
+                header('Location: ' . $redirect);
                 exit;
             } else {
                 // Zabilježi neuspješan pokušaj

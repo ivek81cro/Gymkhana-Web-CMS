@@ -1,7 +1,8 @@
 <?php
-// Detektiraj jesi li u admin folderu (kao u nav.php)
+// Detektiraj jesi li u admin ili micro folderu (kao u nav.php)
 $inAdmin = strpos($_SERVER['SCRIPT_NAME'], '/admin/') !== false || strpos($_SERVER['SCRIPT_NAME'], '\\admin\\') !== false;
-$baseUrl = $inAdmin ? '../' : '';
+$inMicro = strpos($_SERVER['SCRIPT_NAME'], '/micro/') !== false || strpos($_SERVER['SCRIPT_NAME'], '\\micro\\') !== false;
+$baseUrl = ($inAdmin || $inMicro) ? '../' : '';
 ?>
 
 <!-- FOOTER / KONTAKT -->
