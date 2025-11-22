@@ -400,7 +400,7 @@ $educationArticles = $stmtEdu->fetchAll();
                   Praćenje vremena vožnje u stvarnom vremenu tijekom natjecanja Moto Gymkhane. Otvori live timing i
                   prati svoje ili rezultate prijatelja iz prvog reda.
                 </p>
-                <a href="https://live.motogymkhana.hr" class="btn mg-btn mt-3" target="_blank" rel="noreferrer">
+                <a href="micro/index.php" class="btn mg-btn mt-3" target="_blank" rel="noreferrer">
                   Otvori live timing
                 </a>
               </div>
