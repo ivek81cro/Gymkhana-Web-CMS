@@ -323,7 +323,7 @@ $educationArticles = $stmtEdu->fetchAll();
         </div>
 
         <div class="row gy-4">
-          <div class="col-lg-7">
+          <div class="col-lg-6">
             <div class="d-grid gap-3">
               <article class="mg-stacked-item">
                 <h3 class="mg-stacked-title text-secondary">Natjecanja Moto Gymkhane</h3>
@@ -339,19 +339,11 @@ $educationArticles = $stmtEdu->fetchAll();
                   Članstvom podržavaš razvoj sporta, dobivaš pristup edukacijama, treninzima i popustima na događaje i
                   opremu. Pridruži se ekipi koja stalno radi na tome da vožnja bude sigurnija i zabavnija.
                 </p>
-              </article>
-
-              <article class="mg-stacked-item">
-                <h3 class="mg-stacked-title text-secondary">Sponzori i partneri</h3>
-                <p class="mg-stacked-body">
-                  Zahvalni smo svima koji podržavaju rad Udruge – od tehničkih partnera, guma, opreme, pa do lokalnih
-                  zajednica. Bez njih bi bilo puno manje čunjeva i osmijeha.
-                </p>
-              </article>
+              </article>              
             </div>
           </div>
 
-          <div class="col-lg-5">
+          <div class="col-lg-6">
             <div class="d-grid gap-3">
               <article class="mg-stacked-item" id="europsko-prvenstvo">
                 <h3 class="mg-stacked-title text-secondary">11th European Championship</h3>
@@ -359,21 +351,35 @@ $educationArticles = $stmtEdu->fetchAll();
                   Hrvatska je domaćin 11. Europskog prvenstva Moto Gymkhana. Ovdje možeš istaknuti datum, lokaciju,
                   prijave i sve što je važno natjecateljima i publici.
                 </p>
-              </article>
-              <article class="mg-stacked-item" id="suradnja">
+              </article> 
+              
+              <article class="mg-stacked-item">
+                <h3 class="mg-stacked-title text-secondary">Sponzori i partneri</h3>
+                <p class="mg-stacked-body">
+                  Zahvalni smo svima koji podržavaju rad Udruge – od tehničkih partnera, guma, opreme, pa do lokalnih
+                  zajednica. Bez njih bi bilo puno manje čunjeva i osmijeha.
+                </p>
+              </article> 
+
+            </div>
+          </div>
+        </div>
+        <div class="row gy-4 mt-4">
+          <div class="col-12 text-center mt-4">
+
+            <article class="mg-stacked-item" id="suradnja">
                 <h3 class="mg-stacked-title text-secondary">Suradnja</h3>
                 <p class="mg-stacked-body">
                   Za partnerstva, edukacije zatvorenog tipa, suradnje s klubovima i kompanijama – javi nam se putem
                   kontakta. Poligon prilagođavamo različitim formatima i razinama iskustva.
                 </p>
               </article>
+
             </div>
           </div>
-
         </div>
       </div>
     </section>
-
 
     <!-- LIVE + NOVOSTI -->
     <section id="novosti" class="py-5 mg-section-bg">
