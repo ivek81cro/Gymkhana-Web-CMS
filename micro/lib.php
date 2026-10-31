@@ -2,25 +2,25 @@
 require_once __DIR__ . '/config.php';
 
 function read_data() {
-    if (!file_exists(DATA_FILE)) return [];
     $json = @file_get_contents(DATA_FILE);
-    $arr = json_decode($json, true);
-    return is_array($arr) ? $arr : [];
+    $arr = $json === false ? null : json_decode($json, true);
+    if (!is_array($arr) || json_last_error() !== JSON_ERROR_NONE) {
+        throw new RuntimeException('Podaci rezultata nisu dostupni ili nisu ispravni.');
+    }
+    return $arr;
 }
 
 function write_data($arr) {
-    if (!is_dir(DATA_DIR)) { @mkdir(DATA_DIR, 0755, true); }
-    $tmp = DATA_FILE . '.tmp';
-    $fp = @fopen($tmp, 'wb');
-    if (!$fp) return false;
-    if (flock($fp, LOCK_EX)) {
-        fwrite($fp, json_encode(array_values($arr), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
-        fflush($fp);
-        flock($fp, LOCK_UN);
+    $json = json_encode(array_values($arr), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+    if ($json === false) return false;
+    $tmp = tempnam(DATA_DIR, '.results-');
+    if ($tmp === false) return false;
+    $written = @file_put_contents($tmp, $json, LOCK_EX);
+    if ($written !== strlen($json) || !@rename($tmp, DATA_FILE)) {
+        @unlink($tmp);
+        return false;
     }
-    fclose($fp);
-    // Atomic replace
-    return @rename($tmp, DATA_FILE);
+    return true;
 }
 
 function parse_time_ms($str) {

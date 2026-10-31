@@ -4,33 +4,39 @@ require __DIR__ . '/../includes/config.php';
 
 // Ako je već logiran, šaljemo ga na admin-novosti
 if (is_admin()) {
-    header('Location: admin-novosti.php');
+    header('Location: novosti.php');
     exit;
 }
 
 $error = null;
 
-// Rate limiting - max 5 pokušaja u 15 minuta
-if (!isset($_SESSION['login_attempts'])) {
-    $_SESSION['login_attempts'] = [];
-}
-
-// Očisti stare pokušaje (starije od 15 min)
-$_SESSION['login_attempts'] = array_filter(
-    $_SESSION['login_attempts'],
-    fn($time) => $time > time() - 900
-);
-
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Provjeri broj pokušaja
-    if (count($_SESSION['login_attempts']) >= 5) {
-        $error = 'Previše neuspješnih pokušaja. Pokušajte ponovno za 15 minuta.';
-    } else {
-        // CSRF zaštita
         $csrfToken = $_POST['csrf_token'] ?? '';
         if (!verify_csrf_token($csrfToken)) {
             $error = 'Nevažeći sigurnosni token. Osvježite stranicu.';
         } else {
+            // Server-side limit, shared across sessions; do not trust forwarded IP headers.
+            $limitDir = __DIR__ . '/../logs/login-limits';
+            if (!is_dir($limitDir)) {
+                @mkdir($limitDir, 0700, true);
+            }
+            $limitFile = @fopen($limitDir . '/' . hash('sha256', $_SERVER['REMOTE_ADDR'] ?? 'unknown') . '.json', 'c+');
+            if (!$limitFile || !flock($limitFile, LOCK_EX)) {
+                http_response_code(503);
+                exit('Prijava trenutačno nije dostupna.');
+            }
+            $stored = stream_get_contents($limitFile);
+            $attempts = json_decode($stored ?: '[]', true);
+            if (!is_array($attempts)) {
+                http_response_code(503);
+                exit('Prijava trenutačno nije dostupna.');
+            }
+            $attempts = array_values(array_filter($attempts, fn($time) => is_int($time) && $time > time() - 900));
+            if (count($attempts) >= 5) {
+                flock($limitFile, LOCK_UN);
+                fclose($limitFile);
+                $error = 'Previše neuspješnih pokušaja. Pokušajte ponovno za 15 minuta.';
+            } else {
             $username = trim($_POST['username'] ?? '');
             $password = trim($_POST['password'] ?? '');
 
@@ -43,7 +49,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $_SESSION['admin_verified'] = true;
                 $_SESSION['admin_username'] = $username;
                 $_SESSION['user_id'] = 1; // Set user_id for is_admin() check
-                $_SESSION['login_attempts'] = []; // Reset pokušaja
+                ftruncate($limitFile, 0);
+                fflush($limitFile);
+                flock($limitFile, LOCK_UN);
+                fclose($limitFile);
                 
                 // Regeneriraj CSRF token
                 unset($_SESSION['csrf_token']);
@@ -59,15 +68,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 exit;
             } else {
                 // Zabilježi neuspješan pokušaj
-                $_SESSION['login_attempts'][] = time();
+                $attempts[] = time();
+                rewind($limitFile);
+                if (!ftruncate($limitFile, 0) || fwrite($limitFile, json_encode($attempts)) === false || !fflush($limitFile)) {
+                    http_response_code(503);
+                    exit('Prijava trenutačno nije dostupna.');
+                }
+                flock($limitFile, LOCK_UN);
+                fclose($limitFile);
                 $error = 'Pogrešno korisničko ime ili lozinka.';
                 
                 // Log failed login attempt
-                $attempts = count($_SESSION['login_attempts']);
-                log_security('failed_login', "Username: {$username}, Attempts: {$attempts}", 'medium');
+                $attemptCount = count($attempts);
+                log_security('failed_login', "Username: {$username}, Attempts: {$attemptCount}", 'medium');
+            }
             }
         }
-    }
 }
 ?>
 <!DOCTYPE html>

@@ -4,15 +4,16 @@ require __DIR__ . '/../includes/config.php';
 
 // Samo za prijavljene admine
 require_admin();
+$errors = [];
 
 // Brisanje članka
-if (isset($_GET['delete'])) {
-    $deleteId = (int)$_GET['delete'];
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete'])) {
+    $deleteId = (int)$_POST['delete'];
     
     if ($deleteId > 0) {
         try {
             // Provjeri CSRF token
-            if (!isset($_GET['token']) || !verify_csrf_token($_GET['token'])) {
+            if (!verify_csrf_token($_POST['csrf_token'] ?? '')) {
                 $errors[] = 'Nevažeći sigurnosni token.';
             } else {
                 // Get article title before deleting
@@ -49,7 +50,6 @@ $galleries = $pdo->query("
     ORDER BY created_at DESC
 ")->fetchAll(PDO::FETCH_ASSOC);
 
-$errors = [];
 if (!isset($success)) {
     $success = null;
 }
@@ -74,7 +74,7 @@ if ($editing) {
 }
 
 // Obrada forme (novo + edit)
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && !isset($_POST['delete'])) {
   // CSRF provjera
   $csrfToken = $_POST['csrf_token'] ?? '';
   if (!verify_csrf_token($csrfToken)) {
@@ -94,11 +94,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
   if ($title === '') {
     $errors[] = 'Naslov je obavezan.';
-  }
-  
-  // Validacija statusa
-  if (!in_array($status, ['draft', 'published'])) {
-    $status = 'draft';
   }
   
   // Validacija statusa
@@ -158,6 +153,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           ':category' => $category,
           ':tags' => $tags,
           ':gallery_id' => $galleryId,
+          ':status' => $status,
           ':created_at' => $createdAt,
           ':id' => $article['id'],
         ]);
@@ -176,6 +172,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $article['category'] = $category;
         $article['tags'] = $tags;
         $article['gallery_id'] = $galleryId;
+        $article['status'] = $status;
         $article['created_at'] = $createdAt;
       } else {
         // INSERT novog članka
@@ -366,12 +363,10 @@ $allArticles = $stmtList->fetchAll();
                         class="btn btn-sm btn-outline-secondary" title="Pogledaj na webu">
                         Pogledaj
                       </a>
-                      <a href="novosti.php?delete=<?= (int) $row['id'] ?>&token=<?= urlencode(generate_csrf_token()) ?>" 
-                         class="btn btn-sm btn-outline-danger" 
-                         title="Obriši članak"
-                         onclick="return confirm('Jesi li siguran da želiš obrisati članak \'<?= htmlspecialchars($row['title'], ENT_QUOTES, 'UTF-8') ?>\'? Ova radnja se ne može poništiti.')">
-                        Obriši
-                      </a>
+                      <form method="post" onsubmit="return confirm('Obrisati ovaj članak? Ova radnja se ne može poništiti.');">
+                        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(generate_csrf_token(), ENT_QUOTES, 'UTF-8') ?>">
+                        <button type="submit" name="delete" value="<?= (int) $row['id'] ?>" class="btn btn-sm btn-outline-danger">Obriši</button>
+                      </form>
                     </td>
                   </tr>
                 <?php endforeach; ?>

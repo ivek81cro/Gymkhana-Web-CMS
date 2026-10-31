@@ -9,8 +9,12 @@ $errors = [];
 $success = null;
 
 // Brisanje galerije (opcionalno)
-if (isset($_GET['delete'])) {
-    $id = (int)$_GET['delete'];
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete'])) {
+    if (!verify_csrf_token($_POST['csrf_token'] ?? '')) {
+        http_response_code(403);
+        exit('Nevažeći sigurnosni token.');
+    }
+    $id = (int)$_POST['delete'];
 
     if ($id > 0) {
         // Get gallery name before deleting
@@ -101,11 +105,10 @@ $galleries = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                         <a href="galerija-uredi.php?id=<?= (int)$g['id'] ?>" class="btn btn-outline-light">
                                             Uredi
                                         </a>
-                                        <a href="?delete=<?= (int)$g['id'] ?>"
-                                           class="btn btn-outline-danger"
-                                           onclick="return confirm('Sigurno obrisati ovu galeriju?');">
-                                            Obriši
-                                        </a>
+                                        <form method="post" onsubmit="return confirm('Sigurno obrisati ovu galeriju?');">
+                                            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(generate_csrf_token(), ENT_QUOTES, 'UTF-8') ?>">
+                                            <button type="submit" name="delete" value="<?= (int)$g['id'] ?>" class="btn btn-sm btn-outline-danger">Obriši</button>
+                                        </form>
                                     </div>
                                 </td>
                             </tr>

@@ -144,14 +144,13 @@ function resizeImage($source, $destination, $maxWidth = 1920, $maxHeight = 1080,
     return $result;
 }
 
-// DEBUG - privremeno uključeno dok ne proradi upload
-error_reporting(E_ALL);
-ini_set('display_errors', '1');
-
 $errors = [];
 $success = null;
-$debugFiles = '';
-$debugInfo = [];
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && !verify_csrf_token($_POST['csrf_token'] ?? '')) {
+    http_response_code(403);
+    exit('Nevažeći sigurnosni token.');
+}
 
 $galleryId = isset($_GET['id']) ? (int) $_GET['id'] : null;
 
@@ -184,9 +183,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_gallery'])) {
         $errors[] = 'Izgleda da je ukupna veličina uploada veća od dopuštenog limita na serveru (post_max_size / upload_max_filesize). 
         Pokušaj s manjim brojem / manjim slikama ili povećaj limite u PHP postavkama na hostingu.';
     }
-    // Debug info
-    $debugFiles = print_r($_FILES, true);
-    $debugInfo['post'] = $_POST;
 
     // ID iz POST-a
     $galleryId = !empty($_POST['id']) ? (int) $_POST['id'] : null;
@@ -252,7 +248,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_gallery'])) {
 
         // Putanja do upload foldera
         $uploadDir = __DIR__ . '/../uploads/gallery/';
-        $debugInfo['uploadDir'] = $uploadDir;
 
         // Kreiraj folder ako ne postoji
         if (!is_dir($uploadDir)) {
@@ -261,8 +256,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_gallery'])) {
             }
         }
 
-        $debugInfo['uploadDir_exists'] = is_dir($uploadDir);
-        $debugInfo['uploadDir_writable'] = is_writable($uploadDir);
 
         if (!$errors && !empty($_FILES['images']['name'][0])) {
             $allowed = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
@@ -332,8 +325,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_gallery'])) {
 }
 
 // Handle image deletion
-if (isset($_GET['delete_image'])) {
-    $imageId = (int)$_GET['delete_image'];
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_image'])) {
+    $imageId = (int)$_POST['delete_image'];
     
     // Get image info to delete file
     $stmt = $pdo->prepare("SELECT filename FROM gallery_images WHERE id = :id");
@@ -399,22 +392,8 @@ if (isset($_GET['delete_image'])) {
             </div>
         <?php endif; ?>
 
-        <?php if ($_SERVER['REQUEST_METHOD'] === 'POST'): ?>
-            <details class="mb-4">
-                <summary class="text-warning">Debug podaci (klikni za detalje)</summary>
-                <div class="mt-2">
-                    <h6 class="text-info">$_FILES:</h6>
-                    <pre
-                        class="small bg-black text-light p-3 rounded-3 mb-3"><?= htmlspecialchars($debugFiles, ENT_QUOTES, 'UTF-8') ?></pre>
-
-                    <h6 class="text-info">Upload direktorij i ostalo:</h6>
-                    <pre
-                        class="small bg-black text-light p-3 rounded-3 mb-0"><?= htmlspecialchars(print_r($debugInfo, true), ENT_QUOTES, 'UTF-8') ?></pre>
-                </div>
-            </details>
-        <?php endif; ?>
-
         <form method="post" enctype="multipart/form-data" class="bg-body-tertiary p-4 rounded-3 text-light">
+            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(generate_csrf_token(), ENT_QUOTES, 'UTF-8') ?>">
             <input type="hidden" name="id"
                 value="<?= htmlspecialchars((string) ($galleryId ?? ''), ENT_QUOTES, 'UTF-8') ?>">
 
@@ -476,12 +455,10 @@ if (isset($_GET['delete_image'])) {
                                 <div class="small text-truncate text-secondary">
                                     <?= htmlspecialchars($img['filename'], ENT_QUOTES, 'UTF-8') ?>
                                 </div>
-                                <!-- Add delete button here -->
-                                <a href="?id=<?= $galleryId ?>&delete_image=<?= $img['id'] ?>" 
-                                   class="btn btn-danger btn-sm w-100 mt-2"
-                                   onclick="return confirm('Obrisati ovu sliku?');">
-                                    Obriši
-                                </a>
+                                <form method="post" onsubmit="return confirm('Obrisati ovu sliku?');">
+                                    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(generate_csrf_token(), ENT_QUOTES, 'UTF-8') ?>">
+                                    <button type="submit" name="delete_image" value="<?= (int)$img['id'] ?>" class="btn btn-danger btn-sm w-100 mt-2">Obriši</button>
+                                </form>
                             </div>
                         </div>
                     <?php endforeach; ?>

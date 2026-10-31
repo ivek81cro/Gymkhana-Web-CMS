@@ -38,10 +38,17 @@ Content Management System for Moto Gymkhana Croatia website. PHP-based CMS with 
 
 ### Security Features
 - 🔒 Password hashing (bcrypt)
-- 🛡️ CSRF token protection on all forms
-- 🚫 Rate limiting (5 login attempts per 15 min)
+- 🛡️ CSRF token protection for administrative changes
+- 🚫 Server-side login rate limiting (5 failed attempts per IP in 15 min)
 - 🔑 Session regeneration after login
 - ✅ SQL injection protection (PDO prepared statements)
+
+The web server must deny public access to `includes/`, `logs/`, and `micro/data/`.
+Apache rules are included; configure equivalent restrictions for other servers.
+The PHP process needs write access to `logs/login-limits/` and `micro/data/`.
+Configure HTTPS and trusted proxy settings at the server; login limiting uses
+the direct client address, and secure cookies require HTTPS to be visible to PHP.
+Back up the database, uploads, and competition data and test restoration regularly.
 - 🧹 XSS protection (HTML escaping)
 
 ## 🛠️ Technologies

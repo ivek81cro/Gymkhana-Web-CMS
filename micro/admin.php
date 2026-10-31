@@ -1,10 +1,6 @@
 <?php
 define('IN_APP', true);
 
-// Enable error reporting for debugging
-ini_set('display_errors', 1);
-error_reporting(E_ALL);
-
 // Include required files
 require_once __DIR__ . '/../includes/config.php';
 require_once __DIR__ . '/../includes/seo-meta.php';
@@ -40,6 +36,14 @@ if (!isset($_SESSION['micro_admin_logged'])) {
 }
 
 $csrf = csrf_token();
+$dataLock = null;
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $dataLock = @fopen(DATA_DIR . '/.results.lock', 'c');
+    if (!$dataLock || !flock($dataLock, LOCK_EX)) {
+        http_response_code(503);
+        exit('Rezultate trenutačno nije moguće spremiti.');
+    }
+}
 $data = read_data();
 $notice = '';
 $error = '';
@@ -172,6 +176,11 @@ if (isset($_POST['action']) && $_POST['action'] === 'save') {
             }
         }
     }
+}
+
+if ($dataLock) {
+    flock($dataLock, LOCK_UN);
+    fclose($dataLock);
 }
 
 // EDIT load

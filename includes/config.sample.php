@@ -122,6 +122,12 @@ function shorten_with_more_link(string $text, int $limit, string $url): string
 
 // Start session if not already started
 if (session_status() === PHP_SESSION_NONE) {
+    ini_set('session.use_strict_mode', '1');
+    session_set_cookie_params([
+        'httponly' => true,
+        'secure' => !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off',
+        'samesite' => 'Lax',
+    ]);
     session_start();
 }
 
