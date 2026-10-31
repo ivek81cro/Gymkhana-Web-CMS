@@ -9,6 +9,7 @@
 # User uploads
 /uploads/
 /assets/img/
+/assets/js/tinymce/
 
 # Config file with credentials
 /includes/config.php
