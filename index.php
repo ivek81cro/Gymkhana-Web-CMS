@@ -5,7 +5,7 @@ require __DIR__ . '/includes/seo-meta.php';
 
 // Zadnja 3 članka iz kategorije "Novosti" za mini-listu na početnoj
 $stmtMini = $pdo->prepare("
-    SELECT slug, title, excerpt, content, created_at
+    SELECT slug, title, excerpt, content, image, created_at
     FROM articles
     WHERE category = :category AND status = 'published'
     ORDER BY created_at DESC
@@ -102,6 +102,7 @@ $educationArticles = $stmtEdu->fetchAll();
               <span><strong>120+ članova</strong> u Hrvatskoj</span>
               <span><strong>2018.</strong> – početak priče</span>
               <span><strong>Europa</strong> – dio svjetske mreže Moto Gymkhane</span>
+              <span><strong>Kontakt:</strong> <a href="tel:+385992360091" class="mg-nav-phone">+385 (0)99 236 0091</a></span>
             </div>
             <div class="d-flex flex-wrap gap-2 mt-3">
               <span class="mg-hero-badge">Sigurna vožnja na prvom mjestu</span>
@@ -313,7 +314,7 @@ $educationArticles = $stmtEdu->fetchAll();
       <div class="container">
         <div class="d-flex flex-wrap justify-content-between align-items-baseline gap-3 mb-4">
           <div>
-            <div class="mg-section-eyebrow">Šta. Mi. Radimo.</div>
+            <div class="mg-section-eyebrow">Što. Mi. Radimo.</div>
             <h2 class="mg-section-title"><span class="accent">Natjecanja</span> &amp; članstvo</h2>
           </div>
           <p class="mg-section-subtitle">
@@ -348,8 +349,7 @@ $educationArticles = $stmtEdu->fetchAll();
               <article class="mg-stacked-item" id="europsko-prvenstvo">
                 <h3 class="mg-stacked-title text-secondary">11th European Championship</h3>
                 <p class="mg-stacked-body">
-                  Hrvatska je domaćin 11. Europskog prvenstva Moto Gymkhana. Ovdje možeš istaknuti datum, lokaciju,
-                  prijave i sve što je važno natjecateljima i publici.
+                  Hrvatska je domaćin 11. Europskog prvenstva Moto Gymkhana.
                 </p>
               </article> 
               
@@ -416,8 +416,6 @@ $educationArticles = $stmtEdu->fetchAll();
           <div class="col-lg-5">
             <div class="small text-secondary d-grid gap-2 mg-live-meta">
               <span><strong>Sljedeće natjecanje:</strong> pogledaj raspored u sekciji Natjecanja</span>
-              <span><strong>Live link:</strong> postavi URL za aktualno natjecanje u CMS-u</span>
-              <span><strong>Napomena:</strong> ovaj blok možeš povezati s vlastitim timing backendom ili app-om.</span>
             </div>
           </div>
         </div>
@@ -437,6 +435,13 @@ $educationArticles = $stmtEdu->fetchAll();
             <?php foreach ($latestArticles as $article): ?>
               <div class="col-md-4">
                 <article class="card h-100 mg-card mg-news-card-mini">
+                  <?php if (!empty($article['image'])): ?>
+                    <img src="<?= htmlspecialchars($article['image'], ENT_QUOTES, 'UTF-8') ?>"
+                         class="card-img-top"
+                         alt="<?= htmlspecialchars($article['title'], ENT_QUOTES, 'UTF-8') ?>"
+                         style="height: 200px; object-fit: cover;">
+                  <?php endif; ?>
+
                   <div class="card-body">
                     <p class="mg-news-date mb-1">
                       <?= date('d.m.Y.', strtotime($article['created_at'])) ?>
@@ -454,7 +459,7 @@ $educationArticles = $stmtEdu->fetchAll();
                       $articleUrl    = 'clanak.php?slug=' . urlencode($article['slug']);
                     ?>
                     <p class="card-text text-secondary small mb-0">
-                      <?= shorten_with_more_link($summarySource, 400, $articleUrl) ?>
+                      <?= shorten_with_more_link($summarySource, 200, $articleUrl) ?>
                     </p>
                   </div>
                 </article>
