@@ -55,3 +55,6 @@ package-lock.json
 /vendor/
 composer.lock
 includes/generate-password.php
+CLAUDE.md
+.gitignore
+AGENTS.md
